@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width">
+	<title>Documentation Index</title>
+
+	<!--[if lt IE 9]>
+	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->
+	<link type="text/css" rel="stylesheet" href="styles/sunlight.default.css">
+
+	<link type="text/css" rel="stylesheet" href="styles/site.simplex.css">
+
+</head>
+
+<body>
+
+<div class="navbar navbar-default navbar-fixed-top ">
+<div class="container">
+	<div class="navbar-header">
+		<a class="navbar-brand" href="index.html">Documentation</a>
+		<button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#topNavigation">
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+			<span class="icon-bar"></span>
+        </button>
+	</div>
+	<div class="navbar-collapse collapse" id="topNavigation">
+		<ul class="nav navbar-nav">
+			
+			<li class="dropdown">
+				<a href="modules.list.html" class="dropdown-toggle" data-toggle="dropdown">Modules<b class="caret"></b></a>
+				<ul class="dropdown-menu ">
+					<li><a href="module-channelBuilder.html">channelBuilder</a></li><li><a href="module-webChannelManager.html">webChannelManager</a></li>
+				</ul>
+			</li>
+			
+			<li class="dropdown">
+				<a href="classes.list.html" class="dropdown-toggle" data-toggle="dropdown">Classes<b class="caret"></b></a>
+				<ul class="dropdown-menu ">
+					<li><a href="ChannelProxyService.html">ChannelProxyService</a></li><li><a href="FullyConnectedService.html">FullyConnectedService</a></li><li><a href="WebChannel.html">WebChannel</a></li><li><a href="WebRTCService.html">WebRTCService</a></li>
+				</ul>
+			</li>
+			
+			<li class="dropdown">
+				<a href="interfaces.list.html" class="dropdown-toggle" data-toggle="dropdown">Interfaces<b class="caret"></b></a>
+				<ul class="dropdown-menu ">
+					<li><a href="module-channelBuilder-Interface.html">channelBuilder~Interface</a></li><li><a href="module-webChannelManager-Interface.html">webChannelManager~Interface</a></li><li><a href="ServiceInterface.html">ServiceInterface</a></li>
+				</ul>
+			</li>
+			
+		</ul>
+		<div class="col-sm-3 col-md-3">
+            <form class="navbar-form" role="search">
+                <div class="input-group">
+                    <input type="text" class="form-control" placeholder="Search" name="q" id="search-input">
+                    <div class="input-group-btn">
+                        <button class="btn btn-default" id="search-submit"><i class="glyphicon glyphicon-search"></i></button>
+                    </div>
+                </div>
+            </form>
+        </div>
+	</div>
+
+</div>
+</div>
+
+
+<div class="container" id="toc-content">
+<div class="row">
+
+	
+	<div class="col-md-8">
+	
+		<div id="main">
+			
+
+	
+	
+
+
+
+
+
+
+
+
+
+
+
+	
+	
+
+
+
+
+
+    <section class="readme-section">
+        <article><h1><a href="https://nodei.co/npm/netflux/"><img src="https://nodei.co/npm/netflux.png" alt="NPM"></a> <a href="https://github.com/feross/standard"><img src="https://cdn.rawgit.com/feross/standard/master/badge.svg" alt="js-standard-style"></a> <a href="https://gitter.im/coast-team/netflux?utm_source=badge&amp;utm_medium=badge&amp;utm_campaign=pr-badge&amp;utm_content=badge"><img src="https://badges.gitter.im/coast-team/netflux.svg?style=flat-square" alt="Join the chat at https://gitter.im/coast-team/netflux"></a>&nbsp;<a href="https://github.com/semantic-release/semantic-release"><img src="https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg?style=flat-square" alt="semantic-release"></a>&nbsp;<a href="http://commitizen.github.io/cz-cli/"><img src="https://img.shields.io/badge/commitizen-friendly-brightgreen.svg?style=flat-square" alt="Commitizen friendly"></a>&nbsp;</h1><p><a href="https://travis-ci.org/coast-team/netflux"><img src="https://travis-ci.org/coast-team/netflux.svg?branch=master" alt="Build Status"></a>&nbsp;
+<a href="https://www.bithound.io/github/coast-team/netflux"><img src="https://www.bithound.io/github/coast-team/netflux/badges/score.svg" alt="bitHound Overall Score"></a>&nbsp;
+<a href="https://www.bithound.io/github/coast-team/netflux"><img src="https://www.bithound.io/github/coast-team/netflux/badges/code.svg" alt="bitHound Code"></a>&nbsp;
+<a href="https://codeclimate.com/github/coast-team/netflux"><img src="https://codeclimate.com/github/coast-team/netflux/badges/gpa.svg" alt="Code Climate"></a>&nbsp;
+<a href="https://codeclimate.com/github/coast-team/netflux/coverage"><img src="https://codeclimate.com/github/coast-team/netflux/badges/coverage.svg" alt="Test Coverage"></a>&nbsp;
+<a href="https://david-dm.org/coast-team/netflux#info=devDependencies"><img src="https://david-dm.org/coast-team/netflux/dev-status.svg" alt="devDependency Status"></a></p>
+<p>Abstract peer to peer client transport API. Implementations based on WebRTC and WebSocket to be done.</p>
+<h2>Remark</h2><p>When using API, it may not work from the first attempt. This is because WebRTC uses <code>ws://sigver-coastteam.rhcloud.com:8000</code> signaling server by default. Due to the rhcloud application hosting specification, following a period of inactivity, the server will be available after a while. Try it again a few seconds later.</p>
+<h2>API specification (<em>warning</em>: alpha state)</h2><h3>Remarks</h3><p>Perhaps <code>WebChannel.openForJoining</code> and <code>WebChannel.closeForJoining</code> could be used in case of <em>WebRTC</em> and <em>WebSocket</em>. Maybe leave the possibility to the API user to decide either is an invite-only <code>WebChannel</code> or not. Lets implement and see.</p>
+<hr>
+<h3>WebChannel</h3><h4>Methods</h4><ul>
+<li><strong>onJoining</strong>: function (peerId: <em>string</em>)<ul>
+<li>When new peer has joined the <code>WebChannel</code>.</li>
+</ul>
+</li>
+<li><strong>onLeaving</strong>: function (peerId: <em>string</em>)<ul>
+<li>When the <code>peerId</code> peer has disconnected from the <code>WebChannel</code>.</li>
+</ul>
+</li>
+<li><strong>onMessage</strong>: function (peerId: <em>string</em>, msg: <em>string</em>)<ul>
+<li>When a broadcast message has arrived from the <code>peerId</code> peer.</li>
+</ul>
+</li>
+</ul>
+<h4>Attributes</h4><ul>
+<li><strong>leave</strong> ()<ul>
+<li>Disconnect from this <code>WebChannel</code>.</li>
+</ul>
+</li>
+<li><strong>send</strong> (data: <em>string</em>): <em>Promise</em><ul>
+<li>Send broadcast message to this <code>WebChannel</code>.</li>
+</ul>
+</li>
+<li><strong>openForJoining</strong> (options: <em>Object</em>): <em>string</em><ul>
+<li>Enable other peers to join this <code>WebChannel</code> with your help as an intermediary
+peer. Returns key.</li>
+</ul>
+</li>
+<li><strong>closeForJoining</strong> ()<ul>
+<li>Prevent other peers to join this <code>WebChannel</code> even if they have a key.</li>
+</ul>
+</li>
+</ul></article>
+    </section>
+
+
+
+
+
+
+
+		</div>
+	</div>
+
+	<div class="clearfix"></div>
+
+	
+		<div class="col-md-3">
+			<div id="toc" class="col-md-3 hidden-xs hidden-sm hidden-md"></div>
+		</div>
+	
+
+</div>
+</div>
+
+<div class="modal fade" id="searchResults">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+        <h4 class="modal-title">Search results</h4>
+      </div>
+      <div class="modal-body"></div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div>
+
+<footer>
+
+
+<span class="jsdoc-message">
+	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a>
+	
+		on 2016-03-07T17:11:46+01:00
+	
+	using the <a href="https://github.com/docstrap/docstrap">DocStrap template</a>.
+</span>
+</footer>
+
+<script src="scripts/docstrap.lib.js"></script>
+<script src="scripts/toc.js"></script>
+<script type="text/javascript" src="scripts/fulltext-search-ui.js"></script>
+
+<script>
+$( function () {
+	$( "[id*='$']" ).each( function () {
+		var $this = $( this );
+
+		$this.attr( "id", $this.attr( "id" ).replace( "$", "__" ) );
+	} );
+
+	$( ".tutorial-section pre, .readme-section pre" ).each( function () {
+		var $this = $( this );
+
+		var example = $this.find( "code" );
+		exampleText = example.html();
+		var lang = /{@lang (.*?)}/.exec( exampleText );
+		if ( lang && lang[1] ) {
+			exampleText = exampleText.replace( lang[0], "" );
+			example.html( exampleText );
+			lang = lang[1];
+		} else {
+			var langClassMatch = example.parent()[0].className.match(/lang\-(\S+)/);
+			lang = langClassMatch ? langClassMatch[1] : "javascript";
+		}
+
+		if ( lang ) {
+
+			$this
+			.addClass( "sunlight-highlight-" + lang )
+			.addClass( "linenums" )
+			.html( example.html() );
+
+		}
+	} );
+
+	Sunlight.highlightAll( {
+		lineNumbers : false,
+		showMenu : true,
+		enableDoclinks : true
+	} );
+
+	$.catchAnchorLinks( {
+        navbarOffset: 10
+	} );
+	$( "#toc" ).toc( {
+		anchorName  : function ( i, heading, prefix ) {
+			var id = $( heading ).attr( "id" );
+			return id && id.replace(/\~/g, '-inner-').replace(/\./g, '-static-') || ( prefix + i );
+		},
+		selectors   : "#toc-content h1,#toc-content h2,#toc-content h3,#toc-content h4",
+		showAndHide : false,
+		smoothScrolling: true
+	} );
+
+	$( "#main span[id^='toc']" ).addClass( "toc-shim" );
+	$( '.dropdown-toggle' ).dropdown();
+
+    $( "table" ).each( function () {
+      var $this = $( this );
+      $this.addClass('table');
+    } );
+
+} );
+</script>
+
+
+
+<!--Navigation and Symbol Display-->
+
+
+<!--Google Analytics-->
+
+
+<script type="text/javascript">
+	$(document).ready(function() {
+		SearcherDisplay.init();
+	});
+</script>
+
+</body>
+</html>
