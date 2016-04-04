@@ -40,7 +40,7 @@
 			<li class="dropdown">
 				<a href="classes.list.html" class="dropdown-toggle" data-toggle="dropdown">Classes<b class="caret"></b></a>
 				<ul class="dropdown-menu ">
-					<li><a href="ChannelProxyService.html">ChannelProxyService</a></li><li><a href="FullyConnectedService.html">FullyConnectedService</a></li><li><a href="WebChannel.html">WebChannel</a></li><li><a href="WebRTCService.html">WebRTCService</a></li>
+					<li><a href="ChannelProxyService.html">ChannelProxyService</a></li><li><a href="FullyConnectedService.html">FullyConnectedService</a></li><li><a href="SignalingError.html">SignalingError</a></li><li><a href="WebChannel.html">WebChannel</a></li><li><a href="WebRTCService.html">WebRTCService</a></li>
 				</ul>
 			</li>
 			
@@ -87,10 +87,10 @@
         </h2>
         
             <div class="class-description"><p>This class is an API starting point. It represents a group of collaborators
-also called peers. Each member of the group can send/receive broadcast
-as well as personal messages. Every peer in the group can invite another
-person to join the group and he is able to add it respecting the current
-group structure (network topology).</p></div>
+also called peers. Each peer can send/receive broadcast as well as personal
+messages. Every peer in the <code>WebChannel</code> can invite another person to join
+the <em>WebChannel</em> and he also possess enough information to be able to add it
+preserving the current <em>WebChannel</em> structure (network topology).</p></div>
         
     
 </header>
@@ -102,7 +102,7 @@ group structure (network topology).</p></div>
         
 <hr>
 <dt>
-    <h4 class="name" id="WebChannel"><span class="type-signature"></span>new WebChannel(options)</h4>
+    <h4 class="name" id="WebChannel"><span class="type-signature"></span>new WebChannel(<span class="optional">options</span>)</h4>
     
     
 </dt>
@@ -110,7 +110,8 @@ group structure (network topology).</p></div>
 
     
     <div class="description">
-        <p>Creates <code>WebChannel</code>.</p>
+        <p><code>WebChannel</code> constructor. <code>WebChannel</code> can be parameterized in terms of
+network topology and connector technology (WebRTC or WebSocket).</p>
     </div>
     
 
@@ -132,6 +133,8 @@ group structure (network topology).</p></div>
 
         <th>Type</th>
 
+        
+        <th>Argument</th>
         
 
         
@@ -159,6 +162,16 @@ group structure (network topology).</p></div>
             </td>
 
             
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
 
             
 
@@ -176,7 +189,11 @@ group structure (network topology).</p></div>
         <th>Type</th>
 
         
+        <th>Argument</th>
+        
 
+        
+        <th>Default</th>
         
 
         <th class="last">Description</th>
@@ -202,10 +219,26 @@ group structure (network topology).</p></div>
             </td>
 
             
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
 
+                
+
+                
+                </td>
             
 
-            <td class="description last"><p>= FULLY_CONNECTED Defines the network
+            
+                <td class="default">
+                
+                    FULLY_CONNECTED
+                
+                </td>
+            
+
+            <td class="description last"><p>Defines the network
            topology.</p></td>
         </tr>
 
@@ -227,11 +260,27 @@ group structure (network topology).</p></div>
             </td>
 
             
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
 
+                
+
+                
+                </td>
             
 
-            <td class="description last"><p>= WEBRTC Determines which connection
-           service to use to build <code>WebChannel</code>.</p></td>
+            
+                <td class="default">
+                
+                    WEBRTC
+                
+                </td>
+            
+
+            <td class="description last"><p>Determines the connection
+           technology to use for build <code>WebChannel</code>.</p></td>
         </tr>
 
     
@@ -322,7 +371,7 @@ group structure (network topology).</p></div>
             
 <hr>
 <dt class="name" id="id">
-    <h4><span class="type-signature"></span>id<span class="type-signature"></span></h4>
+    <h4><span class="type-signature">&lt;readonly> </span>id<span class="type-signature"></span></h4>
 
     
 </dt>
@@ -382,14 +431,16 @@ group structure (network topology).</p></div>
             
 <hr>
 <dt class="name" id="myId">
-    <h4><span class="type-signature"></span>myId<span class="type-signature"></span></h4>
+    <h4><span class="type-signature">&lt;readonly> </span>myId<span class="type-signature"></span></h4>
 
     
 </dt>
 <dd>
     
     <div class="description">
-        <p>Unique peer identifier in this <code>WebChannel</code>.</p>
+        <p>Unique peer identifier in this <code>WebChannel</code>. After each <code>join</code> function call
+this id will change, because it is up to the <code>WebChannel</code> to assign it when
+you join.</p>
     </div>
     
 
@@ -526,7 +577,7 @@ group structure (network topology).</p></div>
             
 <hr>
 <dt>
-    <h4 class="name" id="join"><span class="type-signature"></span>join(key, options)</h4>
+    <h4 class="name" id="join"><span class="type-signature"></span>join(key, <span class="optional">options</span>)</h4>
     
     
 </dt>
@@ -557,6 +608,8 @@ group structure (network topology).</p></div>
         <th>Type</th>
 
         
+        <th>Argument</th>
+        
 
         
 
@@ -583,6 +636,14 @@ group structure (network topology).</p></div>
             </td>
 
             
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
 
             
 
@@ -607,10 +668,20 @@ group structure (network topology).</p></div>
             </td>
 
             
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
 
             
 
-            <td class="description last"><p>= {} Any available connection service options.</p></td>
+            <td class="description last"><p>Any available connection service options.</p></td>
         </tr>
 
     
@@ -674,7 +745,7 @@ group structure (network topology).</p></div>
     
             
 <div class="param-desc">
-    <p>Is resolve once you became a <code>WebChannel</code> member.</p>
+    <p>It resolves once you became a <code>WebChannel</code> member.</p>
 </div>
 
 
@@ -1036,7 +1107,7 @@ group structure (network topology).</p></div>
             
 <hr>
 <dt>
-    <h4 class="name" id="openForJoining"><span class="type-signature"></span>openForJoining(options)</h4>
+    <h4 class="name" id="openForJoining"><span class="type-signature"></span>openForJoining(<span class="optional">options</span>)</h4>
     
     
 </dt>
@@ -1068,6 +1139,8 @@ peer.</p>
         <th>Type</th>
 
         
+        <th>Argument</th>
+        
 
         
 
@@ -1094,10 +1167,20 @@ peer.</p>
             </td>
 
             
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
 
             
 
-            <td class="description last"><p>= {} Any available connection service options.</p></td>
+            <td class="description last"><p>Any available connection service options.</p></td>
         </tr>
 
     
@@ -1313,6 +1396,158 @@ peer.</p>
     
 </dd>
 
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="sendTo"><span class="type-signature"></span>sendTo(id, data)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>Send the message to a particular peer.</p>
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>id</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">type</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Peer id of the recipient peer</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>data</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">type</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Message</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
         </dl>
     
 
@@ -1361,7 +1596,7 @@ peer.</p>
 <span class="jsdoc-message">
 	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a>
 	
-		on 2016-03-07T17:11:46+01:00
+		on 2016-04-04T17:00:39+02:00
 	
 	using the <a href="https://github.com/docstrap/docstrap">DocStrap template</a>.
 </span>

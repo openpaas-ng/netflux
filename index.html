@@ -40,7 +40,7 @@
 			<li class="dropdown">
 				<a href="classes.list.html" class="dropdown-toggle" data-toggle="dropdown">Classes<b class="caret"></b></a>
 				<ul class="dropdown-menu ">
-					<li><a href="ChannelProxyService.html">ChannelProxyService</a></li><li><a href="FullyConnectedService.html">FullyConnectedService</a></li><li><a href="WebChannel.html">WebChannel</a></li><li><a href="WebRTCService.html">WebRTCService</a></li>
+					<li><a href="ChannelProxyService.html">ChannelProxyService</a></li><li><a href="FullyConnectedService.html">FullyConnectedService</a></li><li><a href="SignalingError.html">SignalingError</a></li><li><a href="WebChannel.html">WebChannel</a></li><li><a href="WebRTCService.html">WebRTCService</a></li>
 				</ul>
 			</li>
 			
@@ -98,14 +98,20 @@
 
 
     <section class="readme-section">
-        <article><h1><a href="https://nodei.co/npm/netflux/"><img src="https://nodei.co/npm/netflux.png" alt="NPM"></a> <a href="https://github.com/feross/standard"><img src="https://cdn.rawgit.com/feross/standard/master/badge.svg" alt="js-standard-style"></a> <a href="https://gitter.im/coast-team/netflux?utm_source=badge&amp;utm_medium=badge&amp;utm_campaign=pr-badge&amp;utm_content=badge"><img src="https://badges.gitter.im/coast-team/netflux.svg?style=flat-square" alt="Join the chat at https://gitter.im/coast-team/netflux"></a>&nbsp;<a href="https://github.com/semantic-release/semantic-release"><img src="https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg?style=flat-square" alt="semantic-release"></a>&nbsp;<a href="http://commitizen.github.io/cz-cli/"><img src="https://img.shields.io/badge/commitizen-friendly-brightgreen.svg?style=flat-square" alt="Commitizen friendly"></a>&nbsp;</h1><p><a href="https://travis-ci.org/coast-team/netflux"><img src="https://travis-ci.org/coast-team/netflux.svg?branch=master" alt="Build Status"></a>&nbsp;
+        <article><h1><a href="https://nodei.co/npm/netflux/"><img src="https://nodei.co/npm/netflux.png" alt="NPM"></a> <a href="https://github.com/feross/standard"><img src="https://cdn.rawgit.com/feross/standard/master/badge.svg" alt="js-standard-style"></a></h1><p><a href="https://gitter.im/coast-team/netflux?utm_source=badge&amp;utm_medium=badge&amp;utm_campaign=pr-badge&amp;utm_content=badge"><img src="https://badges.gitter.im/coast-team/netflux.svg?style=flat-square" alt="Join the chat at https://gitter.im/coast-team/netflux"></a>&nbsp;
+<a href="https://github.com/semantic-release/semantic-release"><img src="https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg?style=flat-square" alt="semantic-release"></a>&nbsp;
+<a href="http://commitizen.github.io/cz-cli/"><img src="https://img.shields.io/badge/commitizen-friendly-brightgreen.svg?style=flat-square" alt="Commitizen friendly"></a>&nbsp;</p>
+<p><a href="https://travis-ci.org/coast-team/netflux"><img src="https://travis-ci.org/coast-team/netflux.svg?branch=master" alt="Build Status"></a>&nbsp;
 <a href="https://www.bithound.io/github/coast-team/netflux"><img src="https://www.bithound.io/github/coast-team/netflux/badges/score.svg" alt="bitHound Overall Score"></a>&nbsp;
 <a href="https://www.bithound.io/github/coast-team/netflux"><img src="https://www.bithound.io/github/coast-team/netflux/badges/code.svg" alt="bitHound Code"></a>&nbsp;
 <a href="https://codeclimate.com/github/coast-team/netflux"><img src="https://codeclimate.com/github/coast-team/netflux/badges/gpa.svg" alt="Code Climate"></a>&nbsp;
 <a href="https://codeclimate.com/github/coast-team/netflux/coverage"><img src="https://codeclimate.com/github/coast-team/netflux/badges/coverage.svg" alt="Test Coverage"></a>&nbsp;
 <a href="https://david-dm.org/coast-team/netflux#info=devDependencies"><img src="https://david-dm.org/coast-team/netflux/dev-status.svg" alt="devDependency Status"></a></p>
 <p>Abstract peer to peer client transport API. Implementations based on WebRTC and WebSocket to be done.</p>
+<p><strong>Documentation:</strong> https://coast-team.github.io/netflux</p>
 <h2>Remark</h2><p>When using API, it may not work from the first attempt. This is because WebRTC uses <code>ws://sigver-coastteam.rhcloud.com:8000</code> signaling server by default. Due to the rhcloud application hosting specification, following a period of inactivity, the server will be available after a while. Try it again a few seconds later.</p>
+<h2>Supported browsers</h2><p><em>Chrome</em> 49 and above</p>
+<p><em>Firefox</em> 45 and above</p>
 <h2>API specification (<em>warning</em>: alpha state)</h2><h3>Remarks</h3><p>Perhaps <code>WebChannel.openForJoining</code> and <code>WebChannel.closeForJoining</code> could be used in case of <em>WebRTC</em> and <em>WebSocket</em>. Maybe leave the possibility to the API user to decide either is an invite-only <code>WebChannel</code> or not. Lets implement and see.</p>
 <hr>
 <h3>WebChannel</h3><h4>Methods</h4><ul>
@@ -123,12 +129,20 @@
 </li>
 </ul>
 <h4>Attributes</h4><ul>
+<li><strong>join</strong> (key: <em>string</em>, options: <em>Object</em>): Promise<ul>
+<li>Join the <code>WebChannel</code> with <code>key</code> as identifier.</li>
+</ul>
+</li>
 <li><strong>leave</strong> ()<ul>
 <li>Disconnect from this <code>WebChannel</code>.</li>
 </ul>
 </li>
-<li><strong>send</strong> (data: <em>string</em>): <em>Promise</em><ul>
+<li><strong>send</strong> (data: <em>string</em>)<ul>
 <li>Send broadcast message to this <code>WebChannel</code>.</li>
+</ul>
+</li>
+<li><strong>sendTo</strong> (id: <em>string</em>, data: <em>string</em>)<ul>
+<li>Send a message to the <code>WebChannel</code> peer identified by <code>id</code>.</li>
 </ul>
 </li>
 <li><strong>openForJoining</strong> (options: <em>Object</em>): <em>string</em><ul>
@@ -136,9 +150,14 @@
 peer. Returns key.</li>
 </ul>
 </li>
-<li><strong>closeForJoining</strong> ()<ul>
+<li><p><strong>closeForJoining</strong> ()</p>
+<ul>
 <li>Prevent other peers to join this <code>WebChannel</code> even if they have a key.</li>
 </ul>
+<h2>UML</h2><p>The Green and green/red parts (<code>Facade</code>, <code>WebChannel</code> and <code>Peer</code>) is what we consider to expose to the API user).</p>
+<p>The Gray parts represent some of internal elements of the API.</p>
+<p>The White parts are not yet implemented.</p>
+<p><img src="doc/uml.png" alt="Netflux UML class diagram"></p>
 </li>
 </ul></article>
     </section>
@@ -184,7 +203,7 @@ peer. Returns key.</li>
 <span class="jsdoc-message">
 	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a>
 	
-		on 2016-03-07T17:11:46+01:00
+		on 2016-04-04T17:00:39+02:00
 	
 	using the <a href="https://github.com/docstrap/docstrap">DocStrap template</a>.
 </span>
