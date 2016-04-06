@@ -4,7 +4,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width">
-	<title>Documentation Module: webChannelManager</title>
+	<title>Documentation Interface: ChannelInterface</title>
 
 	<!--[if lt IE 9]>
 	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -77,10 +77,21 @@
 		<div id="main">
 			
 
-	<h1 class="page-title">Module: webChannelManager</h1>
+	<h1 class="page-title">Interface: ChannelInterface</h1>
 <section>
 
 <header>
+    
+        <h2>
+        ChannelInterface
+        </h2>
+        
+            <div class="class-description"><p>Channel interface.
+<a href="https://developer.mozilla.org/en-US/docs/Web/API/RTCDataChannel">RTCDataChannel</a>
+and
+<a href="https://developer.mozilla.org/en-US/docs/Web/API/WebSocket">WebSocket</a>
+implement it implicitly. Any other channel must implement this interface.</p></div>
+        
     
 </header>
 
@@ -89,17 +100,6 @@
     <div class="container-overview">
     
         
-            <div class="description"><p>Web Channel Manager module is a submodule of <a href="module-service.html">module:service</a> and the
-main component of any Web Channel. It is responsible to preserve Web Channel
-structure intact (i.e. all peers have the same vision of the Web Channel).
-Among its duties are:</p>
-<ul>
-<li>Add a new peer into Web Channel.</li>
-<li>Remove a peer from Web Channel.</li>
-<li>Send a broadcast message.</li>
-<li>Send a message to a particular peer.</li>
-</ul></div>
-        
 
         
 <dl class="details">
@@ -135,13 +135,6 @@ Among its duties are:</p>
 
 	
 
-	
-	<dt class="tag-see method-doc-label method-doc-details-label">See:</dt>
-	<dd class="tag-see">
-		<ul>
-			<li><a href="FullyConnectedService.html">FullyConnectedService</a></li>
-			</ul>
-	</dd>
 	
 
 	
@@ -163,19 +156,31 @@ Among its duties are:</p>
     
 
     
-        <h3 class="subsection-title">Members</h3>
+
+    
+        <h3 class="subsection-title">Methods</h3>
 
         <dl>
             
 <hr>
-<dt class="name" id=".Interface">
-    <h4><span class="type-signature">&lt;static> </span>Interface<span class="type-signature"></span></h4>
-
+<dt>
+    <h4 class="name" id="close"><span class="type-signature">&lt;abstract> </span>close()</h4>
+    
     
 </dt>
 <dd>
+
+    
+    <div class="description">
+        <p>Close channel.</p>
+    </div>
     
 
+    
+
+    
+
+    
     
 
     
@@ -213,17 +218,22 @@ Among its duties are:</p>
 	
 
 	
-	<dt class="tag-see method-doc-label method-doc-details-label">See:</dt>
-	<dd class="tag-see">
-		<ul>
-			<li><a href="module-webChannelManager-Interface.html">module:webChannelManager~Interface</a></li>
-			</ul>
-	</dd>
-	
 
 	
 </dl>
 
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
 
     
 </dd>
@@ -231,18 +241,478 @@ Among its duties are:</p>
         
             
 <hr>
-<dt class="name" id="~CONNECT_WITH">
-    <h4><span class="type-signature">&lt;inner, constant> </span>CONNECT_WITH<span class="type-signature"></span></h4>
-
+<dt>
+    <h4 class="name" id="onclose"><span class="type-signature">&lt;abstract> </span>onclose(evt)</h4>
+    
     
 </dt>
 <dd>
+
     
     <div class="description">
-        <p>Connection service of the peer who received a message of this type should
-establish connection with one or several peers.</p>
+        <p>On close event handler.</p>
     </div>
     
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>evt</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">CloseEvent</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Close event.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+	<dt class="tag-see method-doc-label method-doc-details-label">See:</dt>
+	<dd class="tag-see">
+		<ul>
+			<li><a href="https://developer.mozilla.org/en-US/docs/Web/API/CloseEvent">https://developer.mozilla.org/en-US/docs/Web/API/CloseEvent</a></li>
+			</ul>
+	</dd>
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="onerror"><span class="type-signature">&lt;abstract> </span>onerror(evt)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>On error event handler.</p>
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>evt</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Event</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Error event.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+	<dt class="tag-see method-doc-label method-doc-details-label">See:</dt>
+	<dd class="tag-see">
+		<ul>
+			<li><a href="https://developer.mozilla.org/en-US/docs/Web/API/Event">https://developer.mozilla.org/en-US/docs/Web/API/Event</a></li>
+			</ul>
+	</dd>
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="onmessage"><span class="type-signature">&lt;abstract> </span>onmessage(msgEvt)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>On message event handler.</p>
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>msgEvt</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">MessageEvent</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Message event.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+	<dt class="tag-see method-doc-label method-doc-details-label">See:</dt>
+	<dd class="tag-see">
+		<ul>
+			<li><a href="https://developer.mozilla.org/en-US/docs/Web/API/MessageEvent">https://developer.mozilla.org/en-US/docs/Web/API/MessageEvent</a></li>
+			</ul>
+	</dd>
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="send"><span class="type-signature">&lt;abstract> </span>send(msg)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>send - description.</p>
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>msg</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">string</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Message in stringified JSON format.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
 
     
 
@@ -285,13 +755,23 @@ establish connection with one or several peers.</p>
 	
 </dl>
 
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
 
     
 </dd>
 
         </dl>
-    
-
     
 
     
