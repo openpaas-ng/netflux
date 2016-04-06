@@ -4,7 +4,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width">
-	<title>Documentation Interface: Interface</title>
+	<title>Documentation Class: ChannelProxyService</title>
 
 	<!--[if lt IE 9]>
 	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -77,18 +77,22 @@
 		<div id="main">
 			
 
-	<h1 class="page-title">Interface: Interface</h1>
+	<h1 class="page-title">Class: ChannelProxyService</h1>
 <section>
 
 <header>
     
         <h2>
-            <span class="ancestors"><a href="module-channelBuilder.html">channelBuilder</a>~</span>
+            <span class="ancestors"><a href="module-channelProxy.html">channelProxy</a>~</span>
         
-        Interface
+        ChannelProxyService
         </h2>
         
-            <div class="class-description"><p>Interface for all channel builder services. Its standalone instance is useless.</p></div>
+            <div class="class-description"><p>This is a special service class for ChannelInterface. It mostly
+contains event handlers (e.g. <em>onmessage</em>, <em>onclose</em> etc.) to configure
+a newly created channel. Thus be careful to use <code>this</code> in handlers, as
+it will refer to the instance of <code>ChannelInterface</code> and not to the
+instance of <code>ChannelProxyService</code>.</p></div>
         
     
 </header>
@@ -98,8 +102,24 @@
     <div class="container-overview">
     
         
+<hr>
+<dt>
+    <h4 class="name" id="ChannelProxyService"><span class="type-signature"></span>new ChannelProxyService()</h4>
+    
+    
+</dt>
+<dd>
 
-        
+    
+
+    
+
+    
+
+    
+    
+
+    
 <dl class="details">
     
 
@@ -139,20 +159,23 @@
 </dl>
 
 
-        
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
     
     </div>
-
-    
-        <h3 class="subsection-title">Extends</h3>
-
-        
-
-
-    <ul>
-        <li>ServiceInterface</li>
-    </ul>
-
 
     
 
@@ -173,7 +196,7 @@
             
 <hr>
 <dt>
-    <h4 class="name" id="connectMeToMany"><span class="type-signature"></span>connectMeToMany(peerExecutor, webChannel, peers)</h4>
+    <h4 class="name" id="msg"><span class="type-signature"></span>msg(code, <span class="optional">data</span>)</h4>
     
     
 </dt>
@@ -181,31 +204,7 @@
 
     
     <div class="description">
-        <p>Sends a message to <code>peerExecutor.id</code> asking him to establish a connection
-with <code>peers</code>. This function is used to add a new peer to the <code>webChannel</code>.</p>
-<p>For exemple: A, B, C constitute the <code>webChannel</code>. N1 and N2 are not the
-<code>webChannel</code> members and they are about to join it. N1 is connected to A.
-Thus A is the intermediary peer for communicate with N1. N2 is connected
-to C thereby C is the intermediary peer for N2.</p>
-<p>N1&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;A<br />
-+-------&gt;+<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+-----------+&lt;------+<br />
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;B&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;C&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;N2<br /></p>
-<p> Here are possible use cases:</p>
-<ol>
-<li>A asks C to connect with N1</li>
-<li>A asks B to connect with N1</li>
-<li>B asks A to connect with N1</li>
-<li>B asks C to connect with N1</li>
-<li>B asks C to connect with A</li>
-<li>A asks N1 to connect with B</li>
-<li>A asks N1 to connect with C</li>
-<li>B asks N1 to connect with C</li>
-<li>A asks N1 to connect with N2</li>
-<li>B asks N2 to connect with N1</li>
-</ol>
+        <p>Message builder.</p>
     </div>
     
 
@@ -232,6 +231,8 @@ to C thereby C is the intermediary peer for N2.</p>
         
 
         
+        <th>Default</th>
+        
 
         <th class="last">Description</th>
     </tr>
@@ -242,13 +243,13 @@ to C thereby C is the intermediary peer for N2.</p>
 
         <tr>
             
-                <td class="name"><code>peerExecutor</code></td>
+                <td class="name"><code>code</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">Object</span>
+<span class="param-type">int</span>
 
 
 
@@ -266,74 +267,25 @@ to C thereby C is the intermediary peer for N2.</p>
             
 
             
-
-            <td class="description last"><p>The peer who must establish connection with <code>peers</code>.</p>
-                <h6 class="method-params-label method-subparams-label">Properties</h6>
-                
-
-<table class="params table table-striped">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-        <th>Argument</th>
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>id</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-
-                
-
+                <td class="default">
                 
                 </td>
             
 
-            
-
-            <td class="description last"><p>The <code>peerExecutor</code>'s id.</p></td>
+            <td class="description last"><p>One of the constant values in constans.</p></td>
         </tr>
 
     
 
         <tr>
             
-                <td class="name"><code>intermediaryId</code></td>
+                <td class="name"><code>data</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">string</span>
+<span class="param-type">Object</span>
 
 
 
@@ -353,23 +305,565 @@ to C thereby C is the intermediary peer for N2.</p>
             
 
             
+                <td class="default">
+                
+                    {}
+                
+                </td>
+            
 
-            <td class="description last"><p>The id of the peer in the <code>webChannel</code>
-           who knows the <code>peerExecutor</code> which is not yet a member of the <code>webChannel</code>.</p></td>
+            <td class="description last"><p>Data to be send.</p></td>
         </tr>
 
     
     </tbody>
 </table>
 
-            </td>
-        </tr>
+    
 
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    <ul>
+<li>Data in stringified JSON format.</li>
+</ul>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type">string</span>
+
+
+
+    </dd>
+</dl>
+
+
+        
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="onClose"><span class="type-signature"></span>onClose(evt)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>On channel close event handler.</p>
+<ul>
+<li>For <code>RTCDataChannel</code> the type of <code>evt</code> is <code>Event</code></li>
+<li>For <code>WebSocket</code>, the type of <code>evt</code> is <code>CloseEvent</code>.</li>
+</ul>
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
     
 
         <tr>
             
-                <td class="name"><code>webChannel</code></td>
+                <td class="name"><code>evt</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Event</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Close event.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+	<dt class="tag-see method-doc-label method-doc-details-label">See:</dt>
+	<dd class="tag-see">
+		<ul>
+			<li><p><a href="https://developer.mozilla.org/en-US/docs/Web/API/Event">Event doc on MDN</a></p></li>
+			
+			<li><p><a href="https://developer.mozilla.org/en-US/docs/Web/API/CloseEvent">CloseEvent doc on MDN</a></p></li>
+			</ul>
+	</dd>
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="onError"><span class="type-signature"></span>onError(evt)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>On error event handler.</p>
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>evt</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Event</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Error event.</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+	<dt class="tag-see method-doc-label method-doc-details-label">See:</dt>
+	<dd class="tag-see">
+		<ul>
+			<li><p><a href="https://developer.mozilla.org/en-US/docs/Web/API/Event">Event doc on MDN</a></p></li>
+			</ul>
+	</dd>
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="onMsg"><span class="type-signature"></span>onMsg(msgEvt)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>On message event handler.</p>
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>msgEvt</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">MessageEvent</span>
+
+
+
+            
+            </td>
+
+            
+
+            
+
+            <td class="description last"><p>Message event</p></td>
+        </tr>
+
+    
+    </tbody>
+</table>
+
+    
+
+    
+<dl class="details">
+    
+
+	
+
+	
+
+	
+
+    
+
+    
+
+    
+
+    
+
+	
+
+	
+
+	
+
+	
+
+	
+
+
+
+	
+
+	
+
+	
+	<dt class="tag-see method-doc-label method-doc-details-label">See:</dt>
+	<dd class="tag-see">
+		<ul>
+			<li><a href="https://developer.mozilla.org/en-US/docs/Web/API/MessageEvent">https://developer.mozilla.org/en-US/docs/Web/API/MessageEvent</a></li>
+			</ul>
+	</dd>
+	
+
+	
+</dl>
+
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+
+    
+</dd>
+
+        
+            
+<hr>
+<dt>
+    <h4 class="name" id="onSrvMsg"><span class="type-signature"></span>onSrvMsg(wc, msg)</h4>
+    
+    
+</dt>
+<dd>
+
+    
+    <div class="description">
+        <p>When the message is designated for a service. This is not an event handler
+for a channel. The main difference with the <code>SERVICE_DATA</code> message arriving
+for <code>onMessage</code> is that here the message could be sent by the peer to
+himself.</p>
+    </div>
+    
+
+    
+
+    
+
+    
+    
+        <h5>Parameters:</h5>
+        
+
+<table class="params table table-striped">
+    <thead>
+    <tr>
+        
+        <th>Name</th>
+        
+
+        <th>Type</th>
+
+        
+
+        
+
+        <th class="last">Description</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    
+
+        <tr>
+            
+                <td class="name"><code>wc</code></td>
             
 
             <td class="type">
@@ -383,467 +877,17 @@ to C thereby C is the intermediary peer for N2.</p>
             </td>
 
             
-                <td class="attributes">
-                
-
-                
-
-                
-                </td>
-            
 
             
 
-            <td class="description last"><p><code>webChannel</code> which has this function caller as member.</p></td>
+            <td class="description last"><p>Web Channel.</p></td>
         </tr>
 
     
 
         <tr>
             
-                <td class="name"><code>peers</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">Array.&lt;Object></span>
-
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-
-                
-
-                
-                </td>
-            
-
-            
-
-            <td class="description last"><p>An array of peers with whom the <code>peerExecutor</code> must
-          establish a connection.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>peers[].id</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-
-                
-
-                
-                </td>
-            
-
-            
-
-            <td class="description last"><p>The peer's id.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>peers[].intermediaryId</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">string</span>
-
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
-
-            
-
-            <td class="description last"><p>the id of an intermediary peer
-          to communicate with this partner (as for <code>peerExecutor</code>).</p></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-    
-
-    
-<dl class="details">
-    
-
-	
-
-	
-
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <h5>Returns:</h5>
-    
-            
-<div class="param-desc">
-    <p>Once <code>peerExecutor</code> established all required connections,
-          the promise is resolved, otherwise it is rejected.</p>
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">Promise</span>
-
-
-
-    </dd>
-</dl>
-
-
-        
-
-    
-</dd>
-
-        
-            
-<hr>
-<dt>
-    <h4 class="name" id="join"><span class="type-signature">&lt;abstract> </span>join(key, options)</h4>
-    
-    
-</dt>
-<dd>
-
-    
-    <div class="description">
-        <p>Connects you with the peer who provided the <code>key</code>.</p>
-    </div>
-    
-
-    
-
-    
-
-    
-    
-        <h5>Parameters:</h5>
-        
-
-<table class="params table table-striped">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>key</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">type</span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>A key obtained from a peer.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>options</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">type</span>
-
-
-
-            
-            </td>
-
-            
-
-            
-
-            <td class="description last"><p>= {} Any other options which depend on the
-          implementation.</p></td>
-        </tr>
-
-    
-    </tbody>
-</table>
-
-    
-
-    
-<dl class="details">
-    
-
-	
-
-	
-
-	
-
-    
-
-    
-
-    
-
-    
-
-	
-
-	
-
-	
-
-	
-
-	
-
-
-
-	
-
-	
-
-	
-
-	
-</dl>
-
-
-    
-
-    
-
-    
-
-    
-
-    
-
-    
-    <h5>Returns:</h5>
-    
-            
-<div class="param-desc">
-    <p>It is resolved when the connection is established,
-          otherwise it is rejected.</p>
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">Promise</span>
-
-
-
-    </dd>
-</dl>
-
-
-        
-
-    
-</dd>
-
-        
-            
-<hr>
-<dt>
-    <h4 class="name" id="open"><span class="type-signature">&lt;abstract> </span>open(onChannel, <span class="optional">options</span>)</h4>
-    
-    
-</dt>
-<dd>
-
-    
-    <div class="description">
-        <p>Enables other clients to establish a connection with you.</p>
-    </div>
-    
-
-    
-
-    
-
-    
-    
-        <h5>Parameters:</h5>
-        
-
-<table class="params table table-striped">
-    <thead>
-    <tr>
-        
-        <th>Name</th>
-        
-
-        <th>Type</th>
-
-        
-        <th>Argument</th>
-        
-
-        
-
-        <th class="last">Description</th>
-    </tr>
-    </thead>
-
-    <tbody>
-    
-
-        <tr>
-            
-                <td class="name"><code>onChannel</code></td>
-            
-
-            <td class="type">
-            
-                
-<span class="param-type">onChannelCallback</span>
-
-
-
-            
-            </td>
-
-            
-                <td class="attributes">
-                
-
-                
-
-                
-                </td>
-            
-
-            
-
-            <td class="description last"><p>Callback function to execute once the
-         connection is established.</p></td>
-        </tr>
-
-    
-
-        <tr>
-            
-                <td class="name"><code>options</code></td>
+                <td class="name"><code>msg</code></td>
             
 
             <td class="type">
@@ -857,20 +901,10 @@ to C thereby C is the intermediary peer for N2.</p>
             </td>
 
             
-                <td class="attributes">
-                
-                    &lt;optional><br>
-                
-
-                
-
-                
-                </td>
-            
 
             
 
-            <td class="description last"><p>Any other options which depend on the implementation.</p></td>
+            <td class="description last"><p>Message.</p></td>
         </tr>
 
     
@@ -930,32 +964,6 @@ to C thereby C is the intermediary peer for N2.</p>
     
 
     
-    <h5>Returns:</h5>
-    
-            
-<div class="param-desc">
-    <p>Once resolved, provide an Object with <code>key</code> attribute
-          to be passed to connector#join function. It is rejected
-          if an error occured.</p>
-</div>
-
-
-
-<dl>
-    <dt>
-        Type
-    </dt>
-    <dd>
-        
-<span class="param-type">Promise</span>
-
-
-
-    </dd>
-</dl>
-
-
-        
 
     
 </dd>

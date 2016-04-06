@@ -4,7 +4,7 @@
 <head>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width">
-	<title>Documentation Module: connector</title>
+	<title>Documentation Module: serviceProvider</title>
 
 	<!--[if lt IE 9]>
 	<script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -33,21 +33,21 @@
 			<li class="dropdown">
 				<a href="modules.list.html" class="dropdown-toggle" data-toggle="dropdown">Modules<b class="caret"></b></a>
 				<ul class="dropdown-menu ">
-					<li><a href="module-connector.html">connector</a></li>
+					<li><a href="module-channelBuilder.html">channelBuilder</a></li><li><a href="module-channelProxy.html">channelProxy</a></li><li><a href="module-service.html">service</a></li><li><a href="module-serviceProvider.html">serviceProvider</a></li><li><a href="module-webChannelManager.html">webChannelManager</a></li>
 				</ul>
 			</li>
 			
 			<li class="dropdown">
 				<a href="classes.list.html" class="dropdown-toggle" data-toggle="dropdown">Classes<b class="caret"></b></a>
 				<ul class="dropdown-menu ">
-					<li><a href="ExchangeProtocolService.html">ExchangeProtocolService</a></li><li><a href="WebRTCService.html">WebRTCService</a></li>
+					<li><a href="FullyConnectedService.html">FullyConnectedService</a></li><li><a href="module-channelProxy-ChannelProxyService.html">channelProxy~ChannelProxyService</a></li><li><a href="SignalingError.html">SignalingError</a></li><li><a href="WebChannel.html">WebChannel</a></li><li><a href="WebRTCService.html">WebRTCService</a></li>
 				</ul>
 			</li>
 			
 			<li class="dropdown">
 				<a href="interfaces.list.html" class="dropdown-toggle" data-toggle="dropdown">Interfaces<b class="caret"></b></a>
 				<ul class="dropdown-menu ">
-					<li><a href="module-connector-ServiceInterface.html">connector~ServiceInterface</a></li>
+					<li><a href="module-channelBuilder-Interface.html">channelBuilder~Interface</a></li><li><a href="module-service-Interface.html">service~Interface</a></li><li><a href="module-webChannelManager-Interface.html">webChannelManager~Interface</a></li>
 				</ul>
 			</li>
 			
@@ -77,7 +77,7 @@
 		<div id="main">
 			
 
-	<h1 class="page-title">Module: connector</h1>
+	<h1 class="page-title">Module: serviceProvider</h1>
 <section>
 
 <header>
@@ -89,12 +89,9 @@
     <div class="container-overview">
     
         
-            <div class="description"><p>Connector module - start point for all connection services. Composed of:</p>
-<ul>
-<li>Constants to identify the request type sent by a connection service
-of one peer to a connection service of another peer.</li>
-<li>Interface.</li>
-</ul></div>
+            <div class="description"><p>Service Provider module is a helper module for <a href="module-service.html">module:service</a>. It is
+responsible to instantiate all services. This module must be used to get
+any service instance.</p></div>
         
 
         
@@ -157,19 +154,29 @@ of one peer to a connection service of another peer.</li>
         <dl>
             
 <hr>
-<dt class="name" id=".CONNECT_WITH">
-    <h4><span class="type-signature">&lt;static, constant> </span>CONNECT_WITH<span class="type-signature"></span></h4>
+<dt class="name" id=".CHANNEL_PROXY">
+    <h4><span class="type-signature">&lt;static, constant> </span>CHANNEL_PROXY<span class="type-signature"> :string</span></h4>
 
     
 </dt>
 <dd>
     
     <div class="description">
-        <p>Connection service of the peer who received a message of this type should
-establish connection with one or several peers.</p>
+        <p>Constant used to get an instance of ChannelProxyService.</p>
     </div>
     
 
+    
+        <h5>Type:</h5>
+        <ul>
+            <li>
+                
+<span class="param-type">string</span>
+
+
+
+            </li>
+        </ul>
     
 
     
@@ -218,19 +225,29 @@ establish connection with one or several peers.</p>
         
             
 <hr>
-<dt class="name" id=".FORWARD_MESSAGE">
-    <h4><span class="type-signature">&lt;static, constant> </span>FORWARD_MESSAGE<span class="type-signature"></span></h4>
+<dt class="name" id=".FULLY_CONNECTED">
+    <h4><span class="type-signature">&lt;static, constant> </span>FULLY_CONNECTED<span class="type-signature"> :string</span></h4>
 
     
 </dt>
 <dd>
     
     <div class="description">
-        <p>Connection service of the peer who received a message of this type should
-forward <code>CONNECT_WITH</code> request to its actual recipient.</p>
+        <p>Constant used to get an instance of <a href="FullyConnectedService.html">FullyConnectedService</a>.</p>
     </div>
     
 
+    
+        <h5>Type:</h5>
+        <ul>
+            <li>
+                
+<span class="param-type">string</span>
+
+
+
+            </li>
+        </ul>
     
 
     
@@ -279,18 +296,29 @@ forward <code>CONNECT_WITH</code> request to its actual recipient.</p>
         
             
 <hr>
-<dt class="name" id=".ServiceInterface">
-    <h4><span class="type-signature">&lt;static> </span>ServiceInterface<span class="type-signature"></span></h4>
+<dt class="name" id=".WEBRTC">
+    <h4><span class="type-signature">&lt;static, constant> </span>WEBRTC<span class="type-signature"> :string</span></h4>
 
     
 </dt>
 <dd>
     
     <div class="description">
-        <p>Interface to be implemented by each connection service.</p>
+        <p>Constant used to get an instance of <a href="WebRTCService.html">WebRTCService</a>.</p>
     </div>
     
 
+    
+        <h5>Type:</h5>
+        <ul>
+            <li>
+                
+<span class="param-type">string</span>
+
+
+
+            </li>
+        </ul>
     
 
     
@@ -340,15 +368,13 @@ forward <code>CONNECT_WITH</code> request to its actual recipient.</p>
     
 
     
-
-    
-        <h3 class="subsection-title">Type Definitions</h3>
+        <h3 class="subsection-title">Methods</h3>
 
         <dl>
-                
+            
 <hr>
 <dt>
-    <h4 class="name" id="~onChannelCallback"><span class="type-signature"></span>onChannelCallback(channel)</h4>
+    <h4 class="name" id=".get"><span class="type-signature">&lt;static> </span>get(name, <span class="optional">options</span>)</h4>
     
     
 </dt>
@@ -356,7 +382,7 @@ forward <code>CONNECT_WITH</code> request to its actual recipient.</p>
 
     
     <div class="description">
-        <p>This callback type is <code>onChannelCallback</code>.</p>
+        <p>Provides the service instance specified by <code>name</code>.</p>
     </div>
     
 
@@ -379,6 +405,8 @@ forward <code>CONNECT_WITH</code> request to its actual recipient.</p>
         <th>Type</th>
 
         
+        <th>Argument</th>
+        
 
         
 
@@ -391,13 +419,19 @@ forward <code>CONNECT_WITH</code> request to its actual recipient.</p>
 
         <tr>
             
-                <td class="name"><code>channel</code></td>
+                <td class="name"><code>name</code></td>
             
 
             <td class="type">
             
                 
-<span class="param-type">Channel</span>
+<span class="param-type"><a href="module-serviceProvider.html#.CHANNEL_PROXY">module:serviceProvider.CHANNEL_PROXY</a></span>
+|
+
+<span class="param-type"><a href="module-serviceProvider.html#.WEBRTC">module:serviceProvider.WEBRTC</a></span>
+|
+
+<span class="param-type"><a href="module-serviceProvider.html#.FULLY_CONNECTED">module:serviceProvider.FULLY_CONNECTED</a></span>
 
 
 
@@ -405,10 +439,52 @@ forward <code>CONNECT_WITH</code> request to its actual recipient.</p>
             </td>
 
             
+                <td class="attributes">
+                
+
+                
+
+                
+                </td>
+            
 
             
 
-            <td class="description last"><p>A new channel.</p></td>
+            <td class="description last"><p>The service name.</p></td>
+        </tr>
+
+    
+
+        <tr>
+            
+                <td class="name"><code>options</code></td>
+            
+
+            <td class="type">
+            
+                
+<span class="param-type">Object</span>
+
+
+
+            
+            </td>
+
+            
+                <td class="attributes">
+                
+                    &lt;optional><br>
+                
+
+                
+
+                
+                </td>
+            
+
+            
+
+            <td class="description last"><p>Any options that the service accepts.</p></td>
         </tr>
 
     
@@ -468,11 +544,39 @@ forward <code>CONNECT_WITH</code> request to its actual recipient.</p>
     
 
     
+    <h5>Returns:</h5>
+    
+            
+<div class="param-desc">
+    <ul>
+<li>Service instance.</li>
+</ul>
+</div>
+
+
+
+<dl>
+    <dt>
+        Type
+    </dt>
+    <dd>
+        
+<span class="param-type"><a href="module-service-Interface.html">module:service~Interface</a></span>
+
+
+
+    </dd>
+</dl>
+
+
+        
 
     
 </dd>
 
-            </dl>
+        </dl>
+    
+
     
 
     
@@ -518,7 +622,7 @@ forward <code>CONNECT_WITH</code> request to its actual recipient.</p>
 <span class="jsdoc-message">
 	Documentation generated by <a href="https://github.com/jsdoc3/jsdoc">JSDoc 3.4.0</a>
 	
-		on 2016-02-24T14:49:34+01:00
+		on 2016-04-06T13:59:53+02:00
 	
 	using the <a href="https://github.com/docstrap/docstrap">DocStrap template</a>.
 </span>
