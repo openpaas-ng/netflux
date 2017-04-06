@@ -9,6 +9,9 @@ import Util from 'Util'
  */
 const MAX_ID = 2147483647
 
+const REJOIN_MAX_ATTEMPTS = 10
+const REJOIN_TIMEOUT = 2000
+
 /**
  * Timout for ping `WebChannel` in milliseconds.
  * @type {number}
@@ -44,6 +47,10 @@ const PING = 4
  * @type {number}
  */
 const PONG = 5
+
+const INIT_CHANNEL = 6
+
+const INIT_CHANNEL_BIS = 7
 
 /**
  * This class is an API starting point. It represents a group of collaborators
@@ -138,6 +145,8 @@ class WebChannel {
      */
     this.gate = new SignalingGate(this, ch => this.addChannel(ch))
 
+    this.onInitChannel = new Map()
+
     /**
      * Unique `WebChannel` identifier. Its value is the same for all `WebChannel` members.
      * @type {number}
@@ -184,23 +193,17 @@ class WebChannel {
    * @param  {string} [url=this.settings.signalingURL] Server URL
    * @returns {Promise<undefined,string>} It resolves once you became a `WebChannel` member.
    */
-  join (keyOrSocket, url = this.settings.signalingURL) {
+  join (keyOrSocket, options = {}) {
+    let settings = {
+      url: this.settings.signalingURL,
+      open: true,
+      rejoinAttempts: REJOIN_MAX_ATTEMPTS,
+      rejoinTimeout: REJOIN_TIMEOUT
+    }
+    Object.assign(settings, options)
     return new Promise((resolve, reject) => {
       if (keyOrSocket.constructor.name !== 'WebSocket') {
-        this.gate.join(url, keyOrSocket)
-          .then(res => {
-            if (res.opened) {
-              resolve()
-            } else {
-              this.onJoin = () => {
-                this.gate.openExisted(res.sigCon, keyOrSocket)
-                  .then(resolve)
-              }
-              this.initChannel(res.con)
-                .catch(reject)
-            }
-          })
-          .catch(reject)
+        this.joinRecursively(keyOrSocket, settings, () => resolve(), err => reject(err), 0)
       } else {
         this.onJoin = resolve
         this.initChannel(keyOrSocket).catch(reject)
@@ -240,14 +243,10 @@ class WebChannel {
    * callback function take a parameter of type {@link SignalingGate~AccessData}.
    */
   open (key = null) {
-    if (Util.isURL(this.settings.signalingURL)) {
-      if (key !== null) {
-        return this.gate.open(this.settings.signalingURL, key)
-      } else {
-        return this.gate.open(this.settings.signalingURL)
-      }
+    if (key !== null) {
+      return this.gate.open(this.settings.signalingURL, key)
     } else {
-      return Promise.reject(new Error(`${this.settings.signalingURL} is not a valid URL`))
+      return this.gate.open(this.settings.signalingURL)
     }
   }
 
@@ -285,9 +284,9 @@ class WebChannel {
       this.members = []
       this.manager.leave(this)
     }
-    if (this.isOpen()) {
-      this.gate.close()
-    }
+    this.onInitChannel = () => {}
+    this.onJoin = () => {}
+    this.gate.close()
   }
 
   /**
@@ -436,6 +435,18 @@ class WebChannel {
           } else this.sendInnerTo(header.recepientId, null, data, true)
           break
         }
+        case INIT_CHANNEL: {
+          this.onInitChannel.get(channel.peerId).resolve()
+          channel.send(this.msgBld.msg(INIT_CHANNEL_BIS, this.myId, channel.peerId))
+          break
+        }
+        case INIT_CHANNEL_BIS: {
+          const resolver = this.onInitChannel.get(channel.peerId)
+          if (resolver) {
+            resolver.resolve()
+          }
+          break
+        }
         case PING:
           this.manager.sendTo(header.senderId, this, this.msgBld.msg(PONG, this.myId))
           break
@@ -466,14 +477,20 @@ class WebChannel {
    * @returns {Promise} - Resolved once the channel is initialized on both sides
    */
   initChannel (ch, id = -1) {
-    if (id === -1) id = this.generateId()
-    const channel = new Channel(ch)
-    channel.peerId = id
-    channel.webChannel = this
-    channel.onMessage = data => this.onChannelMessage(channel, data)
-    channel.onClose = closeEvt => this.manager.onChannelClose(closeEvt, channel)
-    channel.onError = evt => this.manager.onChannelError(evt, channel)
-    return Promise.resolve(channel)
+    return new Promise((resolve, reject) => {
+      if (id === -1) id = this.generateId()
+      const channel = new Channel(ch)
+      channel.peerId = id
+      channel.webChannel = this
+      channel.onMessage = data => this.onChannelMessage(channel, data)
+      channel.onClose = closeEvt => this.manager.onChannelClose(closeEvt, channel)
+      channel.onError = evt => this.manager.onChannelError(evt, channel)
+      this.onInitChannel.set(channel.peerId, {resolve: () => {
+        this.onInitChannel.delete(channel.peerId)
+        resolve(channel)
+      }})
+      channel.send(this.msgBld.msg(INIT_CHANNEL, this.myId, channel.peerId))
+    })
   }
 
   /**
@@ -487,6 +504,41 @@ class WebChannel {
       return ServiceFactory.get(WEB_RTC, this.settings.iceServers)
     }
     return ServiceFactory.get(id)
+  }
+
+/**
+ *
+ * @private
+ * @param  {[type]} key
+ * @param  {[type]} options
+ * @param  {[type]} resolve
+ * @param  {[type]} reject
+ * @param  {[type]} attempt
+ * @return {void}
+ */
+  joinRecursively (key, options, resolve, reject, attempt) {
+    this.gate.join(key, options.url, options.open)
+      .then(connection => {
+        if (connection) {
+          this.onJoin = () => resolve()
+          this.initChannel(connection)
+            .catch(reject)
+        } else {
+          resolve()
+        }
+      })
+      .catch(err => {
+        attempt++
+        console.log(`Failed to join via ${options.url} with ${key} key: ${err.message}`)
+        if (attempt === options.rejoinAttempts) {
+          reject(new Error(`Failed to join via ${options.url} with ${key} key: reached maximum rejoin attempts (${REJOIN_MAX_ATTEMPTS})`))
+        } else {
+          console.log(`Trying to rejoin in ${options.rejoinTimeout} the ${attempt} time... `)
+          setTimeout(() => {
+            this.joinRecursively(key, options, () => resolve(), err => reject(err), attempt)
+          }, options.rejoinTimeout)
+        }
+      })
   }
 
   /**

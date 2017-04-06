@@ -233,8 +233,10 @@ var Service = function () {
     value: function removeItem(obj, id) {
       var currentServiceTemp = itemsStorage.get(this.id);
       var idMap = currentServiceTemp.get(obj);
-      currentServiceTemp.get(obj).delete(id);
-      if (idMap.size === 0) currentServiceTemp.delete(obj);
+      if (idMap !== undefined) {
+        idMap.delete(id);
+        if (idMap.size === 0) currentServiceTemp.delete(obj);
+      }
     }
 
     /**
@@ -668,36 +670,39 @@ var FullyConnectedService = function (_TopologyInterface) {
       var _this4 = this;
 
       var wc = channel.webChannel;
-      var jpMe = void 0;
       switch (msg.code) {
         case SHOULD_CONNECT_TO:
-          jpMe = this.setJP(wc, wc.myId, channel);
-          jpMe.channels.add(channel);
-          get(FullyConnectedService.prototype.__proto__ || Object.getPrototypeOf(FullyConnectedService.prototype), 'connectTo', this).call(this, wc, msg.peers).then(function (failed) {
-            var msg = { code: PEER_JOINED };
-            jpMe.channels.forEach(function (ch) {
-              wc.sendInnerTo(ch, _this4.id, msg);
-              wc.channels.add(ch);
-              wc.onPeerJoin$(ch.peerId);
+          {
+            var jpMe = this.setJP(wc, wc.myId, channel);
+            jpMe.channels.add(channel);
+            get(FullyConnectedService.prototype.__proto__ || Object.getPrototypeOf(FullyConnectedService.prototype), 'connectTo', this).call(this, wc, msg.peers).then(function (failed) {
+              var msg = { code: PEER_JOINED };
+              jpMe.channels.forEach(function (ch) {
+                wc.sendInnerTo(ch, _this4.id, msg);
+                wc.channels.add(ch);
+                wc.onPeerJoin$(ch.peerId);
+              });
+              get(FullyConnectedService.prototype.__proto__ || Object.getPrototypeOf(FullyConnectedService.prototype), 'removeItem', _this4).call(_this4, wc, wc.myId);
+              get(FullyConnectedService.prototype.__proto__ || Object.getPrototypeOf(FullyConnectedService.prototype), 'getItems', _this4).call(_this4, wc).forEach(function (jp) {
+                return wc.sendInnerTo(jp.channel, _this4.id, msg);
+              });
+              wc.onJoin();
             });
-            get(FullyConnectedService.prototype.__proto__ || Object.getPrototypeOf(FullyConnectedService.prototype), 'removeItem', _this4).call(_this4, wc, wc.myId);
-            get(FullyConnectedService.prototype.__proto__ || Object.getPrototypeOf(FullyConnectedService.prototype), 'getItems', _this4).call(_this4, wc).forEach(function (jp) {
-              return wc.sendInnerTo(jp.channel, _this4.id, msg);
-            });
-            wc.onJoin();
-          });
-          break;
-        case PEER_JOINED:
-          jpMe = get(FullyConnectedService.prototype.__proto__ || Object.getPrototypeOf(FullyConnectedService.prototype), 'getItem', this).call(this, wc, wc.myId);
-          get(FullyConnectedService.prototype.__proto__ || Object.getPrototypeOf(FullyConnectedService.prototype), 'removeItem', this).call(this, wc, senderId);
-          if (jpMe !== null) jpMe.channels.add(channel);else {
-            wc.channels.add(channel);
-            wc.onPeerJoin$(senderId);
-            var request = get(FullyConnectedService.prototype.__proto__ || Object.getPrototypeOf(FullyConnectedService.prototype), 'getPendingRequest', this).call(this, wc, senderId);
-            if (request !== null) request.resolve(senderId);
-          }
-          break;
-        case TICK:
+            break;
+          }case PEER_JOINED:
+          {
+            var _jpMe = get(FullyConnectedService.prototype.__proto__ || Object.getPrototypeOf(FullyConnectedService.prototype), 'getItem', this).call(this, wc, wc.myId);
+            get(FullyConnectedService.prototype.__proto__ || Object.getPrototypeOf(FullyConnectedService.prototype), 'removeItem', this).call(this, wc, senderId);
+            if (_jpMe !== null) {
+              _jpMe.channels.add(channel);
+            } else {
+              wc.channels.add(channel);
+              wc.onPeerJoin$(senderId);
+              var request = get(FullyConnectedService.prototype.__proto__ || Object.getPrototypeOf(FullyConnectedService.prototype), 'getPendingRequest', this).call(this, wc, senderId);
+              if (request !== null) request.resolve(senderId);
+            }
+            break;
+          }case TICK:
           {
             this.setJP(wc, senderId, channel);
             var isJoining = get(FullyConnectedService.prototype.__proto__ || Object.getPrototypeOf(FullyConnectedService.prototype), 'getItem', this).call(this, wc, wc.myId) !== null;
@@ -705,7 +710,14 @@ var FullyConnectedService = function (_TopologyInterface) {
             break;
           }
         case TOCK:
-          if (msg.isJoining) this.setJP(wc, senderId, channel);else get(FullyConnectedService.prototype.__proto__ || Object.getPrototypeOf(FullyConnectedService.prototype), 'getItem', this).call(this, wc, wc.myId).channels.add(channel);
+          if (msg.isJoining) {
+            this.setJP(wc, senderId, channel);
+          } else {
+            var jp = get(FullyConnectedService.prototype.__proto__ || Object.getPrototypeOf(FullyConnectedService.prototype), 'getItem', this).call(this, wc, wc.myId);
+            if (jp !== null) {
+              jp.channels.add(channel);
+            }
+          }
           get(FullyConnectedService.prototype.__proto__ || Object.getPrototypeOf(FullyConnectedService.prototype), 'getPendingRequest', this).call(this, wc, senderId).resolve();
           break;
         case SHOULD_ADD_NEW_JOINING_PEER:
@@ -765,16 +777,28 @@ var JoiningPeer = function JoiningPeer(channel, onJoin) {
   this.channels = new Set();
 };
 
+var commonjsGlobal = typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
+
+function commonjsRequire () {
+	throw new Error('Dynamic requires are not currently supported by rollup-plugin-commonjs');
+}
+
+
+
+function createCommonjsModule(fn, module) {
+	return module = { exports: {} }, fn(module, module.exports), module.exports;
+}
+
 !function e(t, n, r) {
   function s(o, u) {
     if (!n[o]) {
       if (!t[o]) {
-        var a = "function" == typeof require && require;if (!u && a) return a(o, !0);if (i) return i(o, !0);var f = new Error("Cannot find module '" + o + "'");throw f.code = "MODULE_NOT_FOUND", f;
+        var a = "function" == typeof commonjsRequire && commonjsRequire;if (!u && a) return a(o, !0);if (i) return i(o, !0);var f = new Error("Cannot find module '" + o + "'");throw f.code = "MODULE_NOT_FOUND", f;
       }var l = n[o] = { exports: {} };t[o][0].call(l.exports, function (e) {
-        var n = t[o][1][e];return s(n ? n : e);
+        var n = t[o][1][e];return s(n || e);
       }, l, l.exports, e, t, n, r);
     }return n[o].exports;
-  }for (var i = "function" == typeof require && require, o = 0; o < r.length; o++) {
+  }for (var i = "function" == typeof commonjsRequire && commonjsRequire, o = 0; o < r.length; o++) {
     s(r[o]);
   }return s;
 }({ 1: [function (require, module, exports) {}, {}], 2: [function (require, module, exports) {
@@ -917,7 +941,7 @@ var JoiningPeer = function JoiningPeer(channel, onJoin) {
             devices = devices.filter(function (d) {
               return "videoinput" === d.kind;
             });var back = devices.find(function (d) {
-              return d.label.toLowerCase().indexOf("back") !== -1;
+              return -1 !== d.label.toLowerCase().indexOf("back");
             }) || devices.length && devices[devices.length - 1];return back && (constraints.video.deviceId = face.exact ? { exact: back.deviceId } : { ideal: back.deviceId }), constraints.video = constraintsToChrome_(constraints.video), logging("chrome: " + JSON.stringify(constraints)), func(constraints);
           });constraints.video = constraintsToChrome_(constraints.video);
         }return logging("chrome: " + JSON.stringify(constraints)), func(constraints);
@@ -1227,7 +1251,7 @@ var Util = function () {
           case Util.WEB_RTC:
             return require('wrtc');
           case Util.WEB_SOCKET:
-            return require('ws');
+            return require('uws');
           case Util.TEXT_ENCODING:
             return require('text-encoding');
           case Util.EVENT_SOURCE:
@@ -1282,7 +1306,8 @@ var Util = function () {
 var wrtc = Util.require(Util.WEB_RTC);
 var CloseEvent = Util.require(Util.CLOSE_EVENT);
 
-var CONNECT_TIMEOUT = 30000;
+var CONNECT_OVER_WEBCHANNEL_TIMEOUT = 10000;
+var CONNECT_OVER_SIGNALING_TIMEOUT = 4000;
 var REMOVE_ITEM_TIMEOUT = 5000;
 
 /**
@@ -1376,8 +1401,8 @@ var WebRTCService = function (_Service) {
       get(WebRTCService.prototype.__proto__ || Object.getPrototypeOf(WebRTCService.prototype), 'setItem', this).call(this, wc, id, item);
       return new Promise(function (resolve, reject) {
         setTimeout(function () {
-          return reject(new Error('WebRTC ' + CONNECT_TIMEOUT + ' connection timeout'));
-        }, CONNECT_TIMEOUT);
+          return reject(new Error('WebRTC ' + CONNECT_OVER_WEBCHANNEL_TIMEOUT + ' connection timeout'));
+        }, CONNECT_OVER_WEBCHANNEL_TIMEOUT);
         _this3.createDataChannel(item.pc, function (dataCh) {
           setTimeout(function () {
             return get(WebRTCService.prototype.__proto__ || Object.getPrototypeOf(WebRTCService.prototype), 'removeItem', _this3).call(_this3, wc, id);
@@ -1399,36 +1424,39 @@ var WebRTCService = function (_Service) {
 
   }, {
     key: 'listenFromSignaling',
-    value: function listenFromSignaling(ws, onChannel) {
+    value: function listenFromSignaling(signaling, onChannel) {
       var _this4 = this;
 
-      ws.onmessage = function (evt) {
-        var msg = JSON.parse(evt.data);
-        if ('id' in msg && 'data' in msg) {
-          var item = get(WebRTCService.prototype.__proto__ || Object.getPrototypeOf(WebRTCService.prototype), 'getItem', _this4).call(_this4, ws, msg.id);
-          if (!item) {
-            item = new CandidatesBuffer(_this4.createPeerConnection(function (candidate) {
-              if (ws.readyState === 1) ws.send(JSON.stringify({ id: msg.id, data: { candidate: candidate } }));
-            }));
-            get(WebRTCService.prototype.__proto__ || Object.getPrototypeOf(WebRTCService.prototype), 'setItem', _this4).call(_this4, ws, msg.id, item);
-          }
-          if ('offer' in msg.data) {
-            _this4.listenOnDataChannel(item.pc, function (dataCh) {
-              setTimeout(function () {
-                return get(WebRTCService.prototype.__proto__ || Object.getPrototypeOf(WebRTCService.prototype), 'removeItem', _this4).call(_this4, ws, msg.id);
-              }, REMOVE_ITEM_TIMEOUT);
-              onChannel(dataCh);
-            });
-            _this4.createAnswer(item.pc, msg.data.offer, item.candidates).then(function (answer) {
-              ws.send(JSON.stringify({ id: msg.id, data: { answer: answer } }));
-            }).catch(function (err) {
-              console.error('During establishing data channel connection through signaling: ' + err.message);
-            });
-          } else if ('candidate' in msg.data) {
-            _this4.addIceCandidate(item, msg.data.candidate);
-          }
+      signaling.filter(function (msg) {
+        return 'id' in msg && 'data' in msg;
+      }).subscribe(function (msg) {
+        var item = get(WebRTCService.prototype.__proto__ || Object.getPrototypeOf(WebRTCService.prototype), 'getItem', _this4).call(_this4, signaling, msg.id);
+        if (!item) {
+          item = new CandidatesBuffer(_this4.createPeerConnection(function (candidate) {
+            signaling.send(JSON.stringify({ id: msg.id, data: { candidate: candidate } }));
+          }));
+          get(WebRTCService.prototype.__proto__ || Object.getPrototypeOf(WebRTCService.prototype), 'setItem', _this4).call(_this4, signaling, msg.id, item);
         }
-      };
+        if ('offer' in msg.data) {
+          _this4.listenOnDataChannel(item.pc, function (dataCh) {
+            setTimeout(function () {
+              return get(WebRTCService.prototype.__proto__ || Object.getPrototypeOf(WebRTCService.prototype), 'removeItem', _this4).call(_this4, signaling, msg.id);
+            }, REMOVE_ITEM_TIMEOUT);
+            onChannel(dataCh);
+          });
+          _this4.createAnswer(item.pc, msg.data.offer, item.candidates).then(function (answer) {
+            signaling.send(JSON.stringify({ id: msg.id, data: { answer: answer } }));
+          }).catch(function (err) {
+            console.error('During establishing data channel connection through signaling: ' + err.message);
+          });
+        } else if ('candidate' in msg.data) {
+          _this4.addIceCandidate(item, msg.data.candidate);
+        }
+      }, function (err) {
+        return console.log(err);
+      }, function () {
+        // clean
+      });
     }
 
     /**
@@ -1441,47 +1469,45 @@ var WebRTCService = function (_Service) {
 
   }, {
     key: 'connectOverSignaling',
-    value: function connectOverSignaling(ws, key) {
+    value: function connectOverSignaling(signaling, key) {
       var _this5 = this;
 
       var item = new CandidatesBuffer(this.createPeerConnection(function (candidate) {
-        if (ws.readyState === 1) ws.send(JSON.stringify({ data: { candidate: candidate } }));
+        signaling.send(JSON.stringify({ data: { candidate: candidate } }));
       }));
-      get(WebRTCService.prototype.__proto__ || Object.getPrototypeOf(WebRTCService.prototype), 'setItem', this).call(this, ws, key, item);
+      get(WebRTCService.prototype.__proto__ || Object.getPrototypeOf(WebRTCService.prototype), 'setItem', this).call(this, signaling, key, item);
       return new Promise(function (resolve, reject) {
-        ws.onclose = function (closeEvt) {
-          return reject(new Error(closeEvt.reason));
-        };
-        ws.onerror = function (err) {
-          return reject(err);
-        };
-        ws.onmessage = function (evt) {
-          try {
-            var msg = JSON.parse(evt.data);
-            if ('data' in msg) {
-              if ('answer' in msg.data) {
-                item.pc.setRemoteDescription(msg.data.answer).then(function () {
-                  return item.pc.addReceivedCandidates(item.candidates);
-                }).catch(function (err) {
-                  return reject(new Error('Set answer (signaling): ' + err.message));
-                });
-              } else if ('candidate' in msg.data) {
-                _this5.addIceCandidate(get(WebRTCService.prototype.__proto__ || Object.getPrototypeOf(WebRTCService.prototype), 'getItem', _this5).call(_this5, ws, key), msg.data.candidate);
-              }
-            }
-          } catch (err) {
-            reject(new Error('Unknown message from ' + ws.url + ': ' + evt.data));
+        var subs = signaling.filter(function (msg) {
+          return 'data' in msg;
+        }).subscribe(function (msg) {
+          if ('answer' in msg.data) {
+            item.pc.setRemoteDescription(msg.data.answer).then(function () {
+              return item.pc.addReceivedCandidates(item.candidates);
+            }).catch(function (err) {
+              return reject(new Error('Set answer (signaling): ' + err.message));
+            });
+          } else if ('candidate' in msg.data) {
+            _this5.addIceCandidate(get(WebRTCService.prototype.__proto__ || Object.getPrototypeOf(WebRTCService.prototype), 'getItem', _this5).call(_this5, signaling, key), msg.data.candidate);
           }
-        };
-
+        }, function (err) {
+          get(WebRTCService.prototype.__proto__ || Object.getPrototypeOf(WebRTCService.prototype), 'removeItem', _this5).call(_this5, signaling, key);
+          reject(err);
+        }, function () {
+          get(WebRTCService.prototype.__proto__ || Object.getPrototypeOf(WebRTCService.prototype), 'removeItem', _this5).call(_this5, signaling, key);
+          reject(new Error('Could not create an RTCDataChannel: WebSocket ' + signaling.socket.url + ' closed'));
+        });
         _this5.createDataChannel(item.pc, function (dataCh) {
           setTimeout(function () {
-            return get(WebRTCService.prototype.__proto__ || Object.getPrototypeOf(WebRTCService.prototype), 'removeItem', _this5).call(_this5, ws, key);
+            subs.unsubscribe();
+            get(WebRTCService.prototype.__proto__ || Object.getPrototypeOf(WebRTCService.prototype), 'removeItem', _this5).call(_this5, signaling, key);
           }, REMOVE_ITEM_TIMEOUT);
           resolve(dataCh);
         });
         _this5.createOffer(item.pc).then(function (offer) {
-          return ws.send(JSON.stringify({ data: { offer: offer } }));
+          signaling.send(JSON.stringify({ data: { offer: offer } }));
+          setTimeout(function () {
+            reject(new Error('Could not create an RTCDataChannel: CONNECT_OVER_SIGNALING_TIMEOUT (' + CONNECT_OVER_SIGNALING_TIMEOUT + 'ms)'));
+          }, CONNECT_OVER_SIGNALING_TIMEOUT);
         }).catch(reject);
       });
     }
@@ -1683,9 +1709,1113 @@ var CandidatesBuffer = function CandidatesBuffer() {
   this.candidates = candidates;
 };
 
+var root = createCommonjsModule(function (module, exports) {
+"use strict";
+/**
+ * window: browser in DOM main thread
+ * self: browser in WebWorker
+ * global: Node.js/other
+ */
+exports.root = (typeof window == 'object' && window.window === window && window
+    || typeof self == 'object' && self.self === self && self
+    || typeof commonjsGlobal == 'object' && commonjsGlobal.global === commonjsGlobal && commonjsGlobal);
+if (!exports.root) {
+    throw new Error('RxJS could not find any global context (window, self, global)');
+}
+
+});
+
+function isFunction(x) {
+    return typeof x === 'function';
+}
+var isFunction_2 = isFunction;
+
+
+var isFunction_1 = {
+	isFunction: isFunction_2
+};
+
+var isArray_1 = Array.isArray || (function (x) { return x && typeof x.length === 'number'; });
+
+
+var isArray = {
+	isArray: isArray_1
+};
+
+function isObject(x) {
+    return x != null && typeof x === 'object';
+}
+var isObject_2 = isObject;
+
+
+var isObject_1 = {
+	isObject: isObject_2
+};
+
+// typeof any so that it we don't have to cast when comparing a result to the error object
+var errorObject_1 = { e: {} };
+
+
+var errorObject = {
+	errorObject: errorObject_1
+};
+
+var tryCatchTarget;
+function tryCatcher() {
+    try {
+        return tryCatchTarget.apply(this, arguments);
+    }
+    catch (e) {
+        errorObject.errorObject.e = e;
+        return errorObject.errorObject;
+    }
+}
+function tryCatch(fn) {
+    tryCatchTarget = fn;
+    return tryCatcher;
+}
+var tryCatch_2 = tryCatch;
+
+
+
+var tryCatch_1 = {
+	tryCatch: tryCatch_2
+};
+
+var __extends$2 = (commonjsGlobal && commonjsGlobal.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+};
+/**
+ * An error thrown when one or more errors have occurred during the
+ * `unsubscribe` of a {@link Subscription}.
+ */
+var UnsubscriptionError = (function (_super) {
+    __extends$2(UnsubscriptionError, _super);
+    function UnsubscriptionError(errors) {
+        _super.call(this);
+        this.errors = errors;
+        var err = Error.call(this, errors ?
+            errors.length + " errors occurred during unsubscription:\n  " + errors.map(function (err, i) { return ((i + 1) + ") " + err.toString()); }).join('\n  ') : '');
+        this.name = err.name = 'UnsubscriptionError';
+        this.stack = err.stack;
+        this.message = err.message;
+    }
+    return UnsubscriptionError;
+}(Error));
+var UnsubscriptionError_2 = UnsubscriptionError;
+
+
+var UnsubscriptionError_1 = {
+	UnsubscriptionError: UnsubscriptionError_2
+};
+
+/**
+ * Represents a disposable resource, such as the execution of an Observable. A
+ * Subscription has one important method, `unsubscribe`, that takes no argument
+ * and just disposes the resource held by the subscription.
+ *
+ * Additionally, subscriptions may be grouped together through the `add()`
+ * method, which will attach a child Subscription to the current Subscription.
+ * When a Subscription is unsubscribed, all its children (and its grandchildren)
+ * will be unsubscribed as well.
+ *
+ * @class Subscription
+ */
+var Subscription = (function () {
+    /**
+     * @param {function(): void} [unsubscribe] A function describing how to
+     * perform the disposal of resources when the `unsubscribe` method is called.
+     */
+    function Subscription(unsubscribe) {
+        /**
+         * A flag to indicate whether this Subscription has already been unsubscribed.
+         * @type {boolean}
+         */
+        this.closed = false;
+        this._parent = null;
+        this._parents = null;
+        this._subscriptions = null;
+        if (unsubscribe) {
+            this._unsubscribe = unsubscribe;
+        }
+    }
+    /**
+     * Disposes the resources held by the subscription. May, for instance, cancel
+     * an ongoing Observable execution or cancel any other type of work that
+     * started when the Subscription was created.
+     * @return {void}
+     */
+    Subscription.prototype.unsubscribe = function () {
+        var hasErrors = false;
+        var errors;
+        if (this.closed) {
+            return;
+        }
+        var _a = this, _parent = _a._parent, _parents = _a._parents, _unsubscribe = _a._unsubscribe, _subscriptions = _a._subscriptions;
+        this.closed = true;
+        this._parent = null;
+        this._parents = null;
+        // null out _subscriptions first so any child subscriptions that attempt
+        // to remove themselves from this subscription will noop
+        this._subscriptions = null;
+        var index = -1;
+        var len = _parents ? _parents.length : 0;
+        // if this._parent is null, then so is this._parents, and we
+        // don't have to remove ourselves from any parent subscriptions.
+        while (_parent) {
+            _parent.remove(this);
+            // if this._parents is null or index >= len,
+            // then _parent is set to null, and the loop exits
+            _parent = ++index < len && _parents[index] || null;
+        }
+        if (isFunction_1.isFunction(_unsubscribe)) {
+            var trial = tryCatch_1.tryCatch(_unsubscribe).call(this);
+            if (trial === errorObject.errorObject) {
+                hasErrors = true;
+                errors = errors || (errorObject.errorObject.e instanceof UnsubscriptionError_1.UnsubscriptionError ?
+                    flattenUnsubscriptionErrors(errorObject.errorObject.e.errors) : [errorObject.errorObject.e]);
+            }
+        }
+        if (isArray.isArray(_subscriptions)) {
+            index = -1;
+            len = _subscriptions.length;
+            while (++index < len) {
+                var sub = _subscriptions[index];
+                if (isObject_1.isObject(sub)) {
+                    var trial = tryCatch_1.tryCatch(sub.unsubscribe).call(sub);
+                    if (trial === errorObject.errorObject) {
+                        hasErrors = true;
+                        errors = errors || [];
+                        var err = errorObject.errorObject.e;
+                        if (err instanceof UnsubscriptionError_1.UnsubscriptionError) {
+                            errors = errors.concat(flattenUnsubscriptionErrors(err.errors));
+                        }
+                        else {
+                            errors.push(err);
+                        }
+                    }
+                }
+            }
+        }
+        if (hasErrors) {
+            throw new UnsubscriptionError_1.UnsubscriptionError(errors);
+        }
+    };
+    /**
+     * Adds a tear down to be called during the unsubscribe() of this
+     * Subscription.
+     *
+     * If the tear down being added is a subscription that is already
+     * unsubscribed, is the same reference `add` is being called on, or is
+     * `Subscription.EMPTY`, it will not be added.
+     *
+     * If this subscription is already in an `closed` state, the passed
+     * tear down logic will be executed immediately.
+     *
+     * @param {TeardownLogic} teardown The additional logic to execute on
+     * teardown.
+     * @return {Subscription} Returns the Subscription used or created to be
+     * added to the inner subscriptions list. This Subscription can be used with
+     * `remove()` to remove the passed teardown logic from the inner subscriptions
+     * list.
+     */
+    Subscription.prototype.add = function (teardown) {
+        if (!teardown || (teardown === Subscription.EMPTY)) {
+            return Subscription.EMPTY;
+        }
+        if (teardown === this) {
+            return this;
+        }
+        var subscription = teardown;
+        switch (typeof teardown) {
+            case 'function':
+                subscription = new Subscription(teardown);
+            case 'object':
+                if (subscription.closed || typeof subscription.unsubscribe !== 'function') {
+                    return subscription;
+                }
+                else if (this.closed) {
+                    subscription.unsubscribe();
+                    return subscription;
+                }
+                else if (typeof subscription._addParent !== 'function' /* quack quack */) {
+                    var tmp = subscription;
+                    subscription = new Subscription();
+                    subscription._subscriptions = [tmp];
+                }
+                break;
+            default:
+                throw new Error('unrecognized teardown ' + teardown + ' added to Subscription.');
+        }
+        var subscriptions = this._subscriptions || (this._subscriptions = []);
+        subscriptions.push(subscription);
+        subscription._addParent(this);
+        return subscription;
+    };
+    /**
+     * Removes a Subscription from the internal list of subscriptions that will
+     * unsubscribe during the unsubscribe process of this Subscription.
+     * @param {Subscription} subscription The subscription to remove.
+     * @return {void}
+     */
+    Subscription.prototype.remove = function (subscription) {
+        var subscriptions = this._subscriptions;
+        if (subscriptions) {
+            var subscriptionIndex = subscriptions.indexOf(subscription);
+            if (subscriptionIndex !== -1) {
+                subscriptions.splice(subscriptionIndex, 1);
+            }
+        }
+    };
+    Subscription.prototype._addParent = function (parent) {
+        var _a = this, _parent = _a._parent, _parents = _a._parents;
+        if (!_parent || _parent === parent) {
+            // If we don't have a parent, or the new parent is the same as the
+            // current parent, then set this._parent to the new parent.
+            this._parent = parent;
+        }
+        else if (!_parents) {
+            // If there's already one parent, but not multiple, allocate an Array to
+            // store the rest of the parent Subscriptions.
+            this._parents = [parent];
+        }
+        else if (_parents.indexOf(parent) === -1) {
+            // Only add the new parent to the _parents list if it's not already there.
+            _parents.push(parent);
+        }
+    };
+    Subscription.EMPTY = (function (empty) {
+        empty.closed = true;
+        return empty;
+    }(new Subscription()));
+    return Subscription;
+}());
+var Subscription_2 = Subscription;
+function flattenUnsubscriptionErrors(errors) {
+    return errors.reduce(function (errs, err) { return errs.concat((err instanceof UnsubscriptionError_1.UnsubscriptionError) ? err.errors : err); }, []);
+}
+
+
+var Subscription_1 = {
+	Subscription: Subscription_2
+};
+
+var empty = {
+    closed: true,
+    next: function (value) { },
+    error: function (err) { throw err; },
+    complete: function () { }
+};
+
+
+var Observer = {
+	empty: empty
+};
+
+var Symbol$1 = root.root.Symbol;
+var $$rxSubscriber = (typeof Symbol$1 === 'function' && typeof Symbol$1.for === 'function') ?
+    Symbol$1.for('rxSubscriber') : '@@rxSubscriber';
+
+
+var rxSubscriber = {
+	$$rxSubscriber: $$rxSubscriber
+};
+
+var __extends$1 = (commonjsGlobal && commonjsGlobal.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+};
+
+
+
+
+/**
+ * Implements the {@link Observer} interface and extends the
+ * {@link Subscription} class. While the {@link Observer} is the public API for
+ * consuming the values of an {@link Observable}, all Observers get converted to
+ * a Subscriber, in order to provide Subscription-like capabilities such as
+ * `unsubscribe`. Subscriber is a common type in RxJS, and crucial for
+ * implementing operators, but it is rarely used as a public API.
+ *
+ * @class Subscriber<T>
+ */
+var Subscriber = (function (_super) {
+    __extends$1(Subscriber, _super);
+    /**
+     * @param {Observer|function(value: T): void} [destinationOrNext] A partially
+     * defined Observer or a `next` callback function.
+     * @param {function(e: ?any): void} [error] The `error` callback of an
+     * Observer.
+     * @param {function(): void} [complete] The `complete` callback of an
+     * Observer.
+     */
+    function Subscriber(destinationOrNext, error, complete) {
+        _super.call(this);
+        this.syncErrorValue = null;
+        this.syncErrorThrown = false;
+        this.syncErrorThrowable = false;
+        this.isStopped = false;
+        switch (arguments.length) {
+            case 0:
+                this.destination = Observer.empty;
+                break;
+            case 1:
+                if (!destinationOrNext) {
+                    this.destination = Observer.empty;
+                    break;
+                }
+                if (typeof destinationOrNext === 'object') {
+                    if (destinationOrNext instanceof Subscriber) {
+                        this.destination = destinationOrNext;
+                        this.destination.add(this);
+                    }
+                    else {
+                        this.syncErrorThrowable = true;
+                        this.destination = new SafeSubscriber(this, destinationOrNext);
+                    }
+                    break;
+                }
+            default:
+                this.syncErrorThrowable = true;
+                this.destination = new SafeSubscriber(this, destinationOrNext, error, complete);
+                break;
+        }
+    }
+    Subscriber.prototype[rxSubscriber.$$rxSubscriber] = function () { return this; };
+    /**
+     * A static factory for a Subscriber, given a (potentially partial) definition
+     * of an Observer.
+     * @param {function(x: ?T): void} [next] The `next` callback of an Observer.
+     * @param {function(e: ?any): void} [error] The `error` callback of an
+     * Observer.
+     * @param {function(): void} [complete] The `complete` callback of an
+     * Observer.
+     * @return {Subscriber<T>} A Subscriber wrapping the (partially defined)
+     * Observer represented by the given arguments.
+     */
+    Subscriber.create = function (next, error, complete) {
+        var subscriber = new Subscriber(next, error, complete);
+        subscriber.syncErrorThrowable = false;
+        return subscriber;
+    };
+    /**
+     * The {@link Observer} callback to receive notifications of type `next` from
+     * the Observable, with a value. The Observable may call this method 0 or more
+     * times.
+     * @param {T} [value] The `next` value.
+     * @return {void}
+     */
+    Subscriber.prototype.next = function (value) {
+        if (!this.isStopped) {
+            this._next(value);
+        }
+    };
+    /**
+     * The {@link Observer} callback to receive notifications of type `error` from
+     * the Observable, with an attached {@link Error}. Notifies the Observer that
+     * the Observable has experienced an error condition.
+     * @param {any} [err] The `error` exception.
+     * @return {void}
+     */
+    Subscriber.prototype.error = function (err) {
+        if (!this.isStopped) {
+            this.isStopped = true;
+            this._error(err);
+        }
+    };
+    /**
+     * The {@link Observer} callback to receive a valueless notification of type
+     * `complete` from the Observable. Notifies the Observer that the Observable
+     * has finished sending push-based notifications.
+     * @return {void}
+     */
+    Subscriber.prototype.complete = function () {
+        if (!this.isStopped) {
+            this.isStopped = true;
+            this._complete();
+        }
+    };
+    Subscriber.prototype.unsubscribe = function () {
+        if (this.closed) {
+            return;
+        }
+        this.isStopped = true;
+        _super.prototype.unsubscribe.call(this);
+    };
+    Subscriber.prototype._next = function (value) {
+        this.destination.next(value);
+    };
+    Subscriber.prototype._error = function (err) {
+        this.destination.error(err);
+        this.unsubscribe();
+    };
+    Subscriber.prototype._complete = function () {
+        this.destination.complete();
+        this.unsubscribe();
+    };
+    Subscriber.prototype._unsubscribeAndRecycle = function () {
+        var _a = this, _parent = _a._parent, _parents = _a._parents;
+        this._parent = null;
+        this._parents = null;
+        this.unsubscribe();
+        this.closed = false;
+        this.isStopped = false;
+        this._parent = _parent;
+        this._parents = _parents;
+        return this;
+    };
+    return Subscriber;
+}(Subscription_1.Subscription));
+var Subscriber_2 = Subscriber;
+/**
+ * We need this JSDoc comment for affecting ESDoc.
+ * @ignore
+ * @extends {Ignored}
+ */
+var SafeSubscriber = (function (_super) {
+    __extends$1(SafeSubscriber, _super);
+    function SafeSubscriber(_parentSubscriber, observerOrNext, error, complete) {
+        _super.call(this);
+        this._parentSubscriber = _parentSubscriber;
+        var next;
+        var context = this;
+        if (isFunction_1.isFunction(observerOrNext)) {
+            next = observerOrNext;
+        }
+        else if (observerOrNext) {
+            context = observerOrNext;
+            next = observerOrNext.next;
+            error = observerOrNext.error;
+            complete = observerOrNext.complete;
+            if (isFunction_1.isFunction(context.unsubscribe)) {
+                this.add(context.unsubscribe.bind(context));
+            }
+            context.unsubscribe = this.unsubscribe.bind(this);
+        }
+        this._context = context;
+        this._next = next;
+        this._error = error;
+        this._complete = complete;
+    }
+    SafeSubscriber.prototype.next = function (value) {
+        if (!this.isStopped && this._next) {
+            var _parentSubscriber = this._parentSubscriber;
+            if (!_parentSubscriber.syncErrorThrowable) {
+                this.__tryOrUnsub(this._next, value);
+            }
+            else if (this.__tryOrSetError(_parentSubscriber, this._next, value)) {
+                this.unsubscribe();
+            }
+        }
+    };
+    SafeSubscriber.prototype.error = function (err) {
+        if (!this.isStopped) {
+            var _parentSubscriber = this._parentSubscriber;
+            if (this._error) {
+                if (!_parentSubscriber.syncErrorThrowable) {
+                    this.__tryOrUnsub(this._error, err);
+                    this.unsubscribe();
+                }
+                else {
+                    this.__tryOrSetError(_parentSubscriber, this._error, err);
+                    this.unsubscribe();
+                }
+            }
+            else if (!_parentSubscriber.syncErrorThrowable) {
+                this.unsubscribe();
+                throw err;
+            }
+            else {
+                _parentSubscriber.syncErrorValue = err;
+                _parentSubscriber.syncErrorThrown = true;
+                this.unsubscribe();
+            }
+        }
+    };
+    SafeSubscriber.prototype.complete = function () {
+        if (!this.isStopped) {
+            var _parentSubscriber = this._parentSubscriber;
+            if (this._complete) {
+                if (!_parentSubscriber.syncErrorThrowable) {
+                    this.__tryOrUnsub(this._complete);
+                    this.unsubscribe();
+                }
+                else {
+                    this.__tryOrSetError(_parentSubscriber, this._complete);
+                    this.unsubscribe();
+                }
+            }
+            else {
+                this.unsubscribe();
+            }
+        }
+    };
+    SafeSubscriber.prototype.__tryOrUnsub = function (fn, value) {
+        try {
+            fn.call(this._context, value);
+        }
+        catch (err) {
+            this.unsubscribe();
+            throw err;
+        }
+    };
+    SafeSubscriber.prototype.__tryOrSetError = function (parent, fn, value) {
+        try {
+            fn.call(this._context, value);
+        }
+        catch (err) {
+            parent.syncErrorValue = err;
+            parent.syncErrorThrown = true;
+            return true;
+        }
+        return false;
+    };
+    SafeSubscriber.prototype._unsubscribe = function () {
+        var _parentSubscriber = this._parentSubscriber;
+        this._context = null;
+        this._parentSubscriber = null;
+        _parentSubscriber.unsubscribe();
+    };
+    return SafeSubscriber;
+}(Subscriber));
+
+
+var Subscriber_1 = {
+	Subscriber: Subscriber_2
+};
+
+function toSubscriber(nextOrObserver, error, complete) {
+    if (nextOrObserver) {
+        if (nextOrObserver instanceof Subscriber_1.Subscriber) {
+            return nextOrObserver;
+        }
+        if (nextOrObserver[rxSubscriber.$$rxSubscriber]) {
+            return nextOrObserver[rxSubscriber.$$rxSubscriber]();
+        }
+    }
+    if (!nextOrObserver && !error && !complete) {
+        return new Subscriber_1.Subscriber(Observer.empty);
+    }
+    return new Subscriber_1.Subscriber(nextOrObserver, error, complete);
+}
+var toSubscriber_2 = toSubscriber;
+
+
+var toSubscriber_1 = {
+	toSubscriber: toSubscriber_2
+};
+
+function getSymbolObservable(context) {
+    var $$observable;
+    var Symbol = context.Symbol;
+    if (typeof Symbol === 'function') {
+        if (Symbol.observable) {
+            $$observable = Symbol.observable;
+        }
+        else {
+            $$observable = Symbol('observable');
+            Symbol.observable = $$observable;
+        }
+    }
+    else {
+        $$observable = '@@observable';
+    }
+    return $$observable;
+}
+var getSymbolObservable_1 = getSymbolObservable;
+var $$observable = getSymbolObservable(root.root);
+
+
+var observable = {
+	getSymbolObservable: getSymbolObservable_1,
+	$$observable: $$observable
+};
+
+/**
+ * A representation of any set of values over any amount of time. This the most basic building block
+ * of RxJS.
+ *
+ * @class Observable<T>
+ */
+var Observable = (function () {
+    /**
+     * @constructor
+     * @param {Function} subscribe the function that is  called when the Observable is
+     * initially subscribed to. This function is given a Subscriber, to which new values
+     * can be `next`ed, or an `error` method can be called to raise an error, or
+     * `complete` can be called to notify of a successful completion.
+     */
+    function Observable(subscribe) {
+        this._isScalar = false;
+        if (subscribe) {
+            this._subscribe = subscribe;
+        }
+    }
+    /**
+     * Creates a new Observable, with this Observable as the source, and the passed
+     * operator defined as the new observable's operator.
+     * @method lift
+     * @param {Operator} operator the operator defining the operation to take on the observable
+     * @return {Observable} a new observable with the Operator applied
+     */
+    Observable.prototype.lift = function (operator) {
+        var observable$$1 = new Observable();
+        observable$$1.source = this;
+        observable$$1.operator = operator;
+        return observable$$1;
+    };
+    Observable.prototype.subscribe = function (observerOrNext, error, complete) {
+        var operator = this.operator;
+        var sink = toSubscriber_1.toSubscriber(observerOrNext, error, complete);
+        if (operator) {
+            operator.call(sink, this.source);
+        }
+        else {
+            sink.add(this._trySubscribe(sink));
+        }
+        if (sink.syncErrorThrowable) {
+            sink.syncErrorThrowable = false;
+            if (sink.syncErrorThrown) {
+                throw sink.syncErrorValue;
+            }
+        }
+        return sink;
+    };
+    Observable.prototype._trySubscribe = function (sink) {
+        try {
+            return this._subscribe(sink);
+        }
+        catch (err) {
+            sink.syncErrorThrown = true;
+            sink.syncErrorValue = err;
+            sink.error(err);
+        }
+    };
+    /**
+     * @method forEach
+     * @param {Function} next a handler for each value emitted by the observable
+     * @param {PromiseConstructor} [PromiseCtor] a constructor function used to instantiate the Promise
+     * @return {Promise} a promise that either resolves on observable completion or
+     *  rejects with the handled error
+     */
+    Observable.prototype.forEach = function (next, PromiseCtor) {
+        var _this = this;
+        if (!PromiseCtor) {
+            if (root.root.Rx && root.root.Rx.config && root.root.Rx.config.Promise) {
+                PromiseCtor = root.root.Rx.config.Promise;
+            }
+            else if (root.root.Promise) {
+                PromiseCtor = root.root.Promise;
+            }
+        }
+        if (!PromiseCtor) {
+            throw new Error('no Promise impl found');
+        }
+        return new PromiseCtor(function (resolve, reject) {
+            var subscription = _this.subscribe(function (value) {
+                if (subscription) {
+                    // if there is a subscription, then we can surmise
+                    // the next handling is asynchronous. Any errors thrown
+                    // need to be rejected explicitly and unsubscribe must be
+                    // called manually
+                    try {
+                        next(value);
+                    }
+                    catch (err) {
+                        reject(err);
+                        subscription.unsubscribe();
+                    }
+                }
+                else {
+                    // if there is NO subscription, then we're getting a nexted
+                    // value synchronously during subscription. We can just call it.
+                    // If it errors, Observable's `subscribe` will ensure the
+                    // unsubscription logic is called, then synchronously rethrow the error.
+                    // After that, Promise will trap the error and send it
+                    // down the rejection path.
+                    next(value);
+                }
+            }, reject, resolve);
+        });
+    };
+    Observable.prototype._subscribe = function (subscriber) {
+        return this.source.subscribe(subscriber);
+    };
+    /**
+     * An interop point defined by the es7-observable spec https://github.com/zenparsing/es-observable
+     * @method Symbol.observable
+     * @return {Observable} this instance of the observable
+     */
+    Observable.prototype[observable.$$observable] = function () {
+        return this;
+    };
+    // HACK: Since TypeScript inherits static properties too, we have to
+    // fight against TypeScript here so Subject can have a different static create signature
+    /**
+     * Creates a new cold Observable by calling the Observable constructor
+     * @static true
+     * @owner Observable
+     * @method create
+     * @param {Function} subscribe? the subscriber function to be passed to the Observable constructor
+     * @return {Observable} a new cold observable
+     */
+    Observable.create = function (subscribe) {
+        return new Observable(subscribe);
+    };
+    return Observable;
+}());
+var Observable_2 = Observable;
+
+
+var Observable_1 = {
+	Observable: Observable_2
+};
+
+var __extends$3 = (commonjsGlobal && commonjsGlobal.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+};
+/**
+ * An error thrown when an action is invalid because the object has been
+ * unsubscribed.
+ *
+ * @see {@link Subject}
+ * @see {@link BehaviorSubject}
+ *
+ * @class ObjectUnsubscribedError
+ */
+var ObjectUnsubscribedError = (function (_super) {
+    __extends$3(ObjectUnsubscribedError, _super);
+    function ObjectUnsubscribedError() {
+        var err = _super.call(this, 'object unsubscribed');
+        this.name = err.name = 'ObjectUnsubscribedError';
+        this.stack = err.stack;
+        this.message = err.message;
+    }
+    return ObjectUnsubscribedError;
+}(Error));
+var ObjectUnsubscribedError_2 = ObjectUnsubscribedError;
+
+
+var ObjectUnsubscribedError_1 = {
+	ObjectUnsubscribedError: ObjectUnsubscribedError_2
+};
+
+var __extends$4 = (commonjsGlobal && commonjsGlobal.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+};
+
+/**
+ * We need this JSDoc comment for affecting ESDoc.
+ * @ignore
+ * @extends {Ignored}
+ */
+var SubjectSubscription = (function (_super) {
+    __extends$4(SubjectSubscription, _super);
+    function SubjectSubscription(subject, subscriber) {
+        _super.call(this);
+        this.subject = subject;
+        this.subscriber = subscriber;
+        this.closed = false;
+    }
+    SubjectSubscription.prototype.unsubscribe = function () {
+        if (this.closed) {
+            return;
+        }
+        this.closed = true;
+        var subject = this.subject;
+        var observers = subject.observers;
+        this.subject = null;
+        if (!observers || observers.length === 0 || subject.isStopped || subject.closed) {
+            return;
+        }
+        var subscriberIndex = observers.indexOf(this.subscriber);
+        if (subscriberIndex !== -1) {
+            observers.splice(subscriberIndex, 1);
+        }
+    };
+    return SubjectSubscription;
+}(Subscription_1.Subscription));
+var SubjectSubscription_2 = SubjectSubscription;
+
+
+var SubjectSubscription_1 = {
+	SubjectSubscription: SubjectSubscription_2
+};
+
+var __extends = (commonjsGlobal && commonjsGlobal.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+};
+
+
+
+
+
+
+/**
+ * @class SubjectSubscriber<T>
+ */
+var SubjectSubscriber = (function (_super) {
+    __extends(SubjectSubscriber, _super);
+    function SubjectSubscriber(destination) {
+        _super.call(this, destination);
+        this.destination = destination;
+    }
+    return SubjectSubscriber;
+}(Subscriber_1.Subscriber));
+/**
+ * @class Subject<T>
+ */
+var Subject = (function (_super) {
+    __extends(Subject, _super);
+    function Subject() {
+        _super.call(this);
+        this.observers = [];
+        this.closed = false;
+        this.isStopped = false;
+        this.hasError = false;
+        this.thrownError = null;
+    }
+    Subject.prototype[rxSubscriber.$$rxSubscriber] = function () {
+        return new SubjectSubscriber(this);
+    };
+    Subject.prototype.lift = function (operator) {
+        var subject = new AnonymousSubject(this, this);
+        subject.operator = operator;
+        return subject;
+    };
+    Subject.prototype.next = function (value) {
+        if (this.closed) {
+            throw new ObjectUnsubscribedError_1.ObjectUnsubscribedError();
+        }
+        if (!this.isStopped) {
+            var observers = this.observers;
+            var len = observers.length;
+            var copy = observers.slice();
+            for (var i = 0; i < len; i++) {
+                copy[i].next(value);
+            }
+        }
+    };
+    Subject.prototype.error = function (err) {
+        if (this.closed) {
+            throw new ObjectUnsubscribedError_1.ObjectUnsubscribedError();
+        }
+        this.hasError = true;
+        this.thrownError = err;
+        this.isStopped = true;
+        var observers = this.observers;
+        var len = observers.length;
+        var copy = observers.slice();
+        for (var i = 0; i < len; i++) {
+            copy[i].error(err);
+        }
+        this.observers.length = 0;
+    };
+    Subject.prototype.complete = function () {
+        if (this.closed) {
+            throw new ObjectUnsubscribedError_1.ObjectUnsubscribedError();
+        }
+        this.isStopped = true;
+        var observers = this.observers;
+        var len = observers.length;
+        var copy = observers.slice();
+        for (var i = 0; i < len; i++) {
+            copy[i].complete();
+        }
+        this.observers.length = 0;
+    };
+    Subject.prototype.unsubscribe = function () {
+        this.isStopped = true;
+        this.closed = true;
+        this.observers = null;
+    };
+    Subject.prototype._trySubscribe = function (subscriber) {
+        if (this.closed) {
+            throw new ObjectUnsubscribedError_1.ObjectUnsubscribedError();
+        }
+        else {
+            return _super.prototype._trySubscribe.call(this, subscriber);
+        }
+    };
+    Subject.prototype._subscribe = function (subscriber) {
+        if (this.closed) {
+            throw new ObjectUnsubscribedError_1.ObjectUnsubscribedError();
+        }
+        else if (this.hasError) {
+            subscriber.error(this.thrownError);
+            return Subscription_1.Subscription.EMPTY;
+        }
+        else if (this.isStopped) {
+            subscriber.complete();
+            return Subscription_1.Subscription.EMPTY;
+        }
+        else {
+            this.observers.push(subscriber);
+            return new SubjectSubscription_1.SubjectSubscription(this, subscriber);
+        }
+    };
+    Subject.prototype.asObservable = function () {
+        var observable = new Observable_1.Observable();
+        observable.source = this;
+        return observable;
+    };
+    Subject.create = function (destination, source) {
+        return new AnonymousSubject(destination, source);
+    };
+    return Subject;
+}(Observable_1.Observable));
+var Subject_2 = Subject;
+/**
+ * @class AnonymousSubject<T>
+ */
+var AnonymousSubject = (function (_super) {
+    __extends(AnonymousSubject, _super);
+    function AnonymousSubject(destination, source) {
+        _super.call(this);
+        this.destination = destination;
+        this.source = source;
+    }
+    AnonymousSubject.prototype.next = function (value) {
+        var destination = this.destination;
+        if (destination && destination.next) {
+            destination.next(value);
+        }
+    };
+    AnonymousSubject.prototype.error = function (err) {
+        var destination = this.destination;
+        if (destination && destination.error) {
+            this.destination.error(err);
+        }
+    };
+    AnonymousSubject.prototype.complete = function () {
+        var destination = this.destination;
+        if (destination && destination.complete) {
+            this.destination.complete();
+        }
+    };
+    AnonymousSubject.prototype._subscribe = function (subscriber) {
+        var source = this.source;
+        if (source) {
+            return this.source.subscribe(subscriber);
+        }
+        else {
+            return Subscription_1.Subscription.EMPTY;
+        }
+    };
+    return AnonymousSubject;
+}(Subject));
+
+var __extends$5 = (commonjsGlobal && commonjsGlobal.__extends) || function (d, b) {
+    for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p];
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+};
+
+/* tslint:enable:max-line-length */
+/**
+ * Filter items emitted by the source Observable by only emitting those that
+ * satisfy a specified predicate.
+ *
+ * <span class="informal">Like
+ * [Array.prototype.filter()](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/filter),
+ * it only emits a value from the source if it passes a criterion function.</span>
+ *
+ * <img src="./img/filter.png" width="100%">
+ *
+ * Similar to the well-known `Array.prototype.filter` method, this operator
+ * takes values from the source Observable, passes them through a `predicate`
+ * function and only emits those values that yielded `true`.
+ *
+ * @example <caption>Emit only click events whose target was a DIV element</caption>
+ * var clicks = Rx.Observable.fromEvent(document, 'click');
+ * var clicksOnDivs = clicks.filter(ev => ev.target.tagName === 'DIV');
+ * clicksOnDivs.subscribe(x => console.log(x));
+ *
+ * @see {@link distinct}
+ * @see {@link distinctUntilChanged}
+ * @see {@link distinctUntilKeyChanged}
+ * @see {@link ignoreElements}
+ * @see {@link partition}
+ * @see {@link skip}
+ *
+ * @param {function(value: T, index: number): boolean} predicate A function that
+ * evaluates each value emitted by the source Observable. If it returns `true`,
+ * the value is emitted, if `false` the value is not passed to the output
+ * Observable. The `index` parameter is the number `i` for the i-th source
+ * emission that has happened since the subscription, starting from the number
+ * `0`.
+ * @param {any} [thisArg] An optional argument to determine the value of `this`
+ * in the `predicate` function.
+ * @return {Observable} An Observable of values from the source that were
+ * allowed by the `predicate` function.
+ * @method filter
+ * @owner Observable
+ */
+function filter$2(predicate, thisArg) {
+    return this.lift(new FilterOperator(predicate, thisArg));
+}
+var filter_2 = filter$2;
+var FilterOperator = (function () {
+    function FilterOperator(predicate, thisArg) {
+        this.predicate = predicate;
+        this.thisArg = thisArg;
+    }
+    FilterOperator.prototype.call = function (subscriber, source) {
+        return source.subscribe(new FilterSubscriber(subscriber, this.predicate, this.thisArg));
+    };
+    return FilterOperator;
+}());
+/**
+ * We need this JSDoc comment for affecting ESDoc.
+ * @ignore
+ * @extends {Ignored}
+ */
+var FilterSubscriber = (function (_super) {
+    __extends$5(FilterSubscriber, _super);
+    function FilterSubscriber(destination, predicate, thisArg) {
+        _super.call(this, destination);
+        this.predicate = predicate;
+        this.thisArg = thisArg;
+        this.count = 0;
+        this.predicate = predicate;
+    }
+    // the try catch block below is left specifically for
+    // optimization and perf reasons. a tryCatcher is not necessary here.
+    FilterSubscriber.prototype._next = function (value) {
+        var result;
+        try {
+            result = this.predicate.call(this.thisArg, value, this.count++);
+        }
+        catch (err) {
+            this.destination.error(err);
+            return;
+        }
+        if (result) {
+            this.destination.next(value);
+        }
+    };
+    return FilterSubscriber;
+}(Subscriber_1.Subscriber));
+
+
+var filter_1 = {
+	filter: filter_2
+};
+
+Observable_1.Observable.prototype.filter = filter_1.filter;
+
 var WebSocket = Util.require(Util.WEB_SOCKET);
 
-var CONNECT_TIMEOUT$1 = 3000;
+var CONNECT_TIMEOUT = 3000;
 
 /**
  * Service class responsible to establish connections between peers via
@@ -1711,7 +2841,7 @@ var WebSocketService = function (_Service) {
      */
     value: function connect(url) {
       return new Promise(function (resolve, reject) {
-        try {
+        if (Util.isURL(url) && url.search(/^wss?/) !== -1) {
           var ws = new WebSocket(url);
           ws.onopen = function () {
             return resolve(ws);
@@ -1719,12 +2849,45 @@ var WebSocketService = function (_Service) {
           // Timeout for node (otherwise it will loop forever if incorrect address)
           setTimeout(function () {
             if (ws.readyState !== ws.OPEN) {
-              reject(new Error('WebSocket ' + CONNECT_TIMEOUT$1 + 'ms connection timeout with ' + url));
+              reject(new Error('WebSocket ' + CONNECT_TIMEOUT + 'ms connection timeout with ' + url));
             }
-          }, CONNECT_TIMEOUT$1);
-        } catch (err) {
-          reject(err);
+          }, CONNECT_TIMEOUT);
+        } else {
+          throw new Error(url + ' is not a valid URL');
         }
+      });
+    }
+  }, {
+    key: 'subject',
+    value: function subject(url) {
+      return this.connect(url).then(function (socket) {
+        var subject = new Subject_2();
+        socket.onmessage = function (evt) {
+          try {
+            subject.next(JSON.parse(evt.data));
+          } catch (err) {
+            console.error('Unknown message from websocket : ' + socket.url + evt.data);
+            socket.close(4000, err.message);
+          }
+        };
+        socket.onerror = function (err) {
+          return subject.error(err);
+        };
+        socket.onclose = function (closeEvt) {
+          if (closeEvt.code === 1000) {
+            subject.complete();
+          } else {
+            subject.error(new Error(closeEvt.code + ': ' + closeEvt.reason));
+          }
+        };
+        subject.send = function (msg) {
+          return socket.send(msg);
+        };
+        subject.close = function (code, reason) {
+          return socket.close(code, reason);
+        };
+        subject.socket = socket;
+        return subject;
       });
     }
   }]);
@@ -1735,7 +2898,7 @@ var EventSource = Util.require(Util.EVENT_SOURCE);
 var fetch = Util.require(Util.FETCH);
 var CloseEvent$1 = Util.require(Util.CLOSE_EVENT);
 
-var CONNECT_TIMEOUT$2 = 5000;
+var CONNECT_TIMEOUT$1 = 5000;
 
 /**
  * Service class responsible to establish connections between peers via
@@ -1771,8 +2934,8 @@ var EventSourceService = function (_Service) {
           };
           // Timeout if "auth" event has not been received.
           setTimeout(function () {
-            reject(new Error('Authentication event has not been received from ' + url + ' within ' + CONNECT_TIMEOUT$2 + 'ms'));
-          }, CONNECT_TIMEOUT$2);
+            reject(new Error('Authentication event has not been received from ' + url + ' within ' + CONNECT_TIMEOUT$1 + 'ms'));
+          }, CONNECT_TIMEOUT$1);
         } catch (err) {
           reject(err.message);
         }
@@ -2005,7 +3168,6 @@ var ChannelBuilderService = function (_Service) {
       var wc = channel.webChannel;
       var myConnectObj = this.availableConnectors(wc);
       var myConnectors = myConnectObj.connectors;
-
       if ('failedReason' in msg) {
         get(ChannelBuilderService.prototype.__proto__ || Object.getPrototypeOf(ChannelBuilderService.prototype), 'getPendingRequest', this).call(this, wc, senderId).reject(new Error(msg.failedReason));
       } else if ('shouldConnect' in msg) {
@@ -2069,7 +3231,7 @@ var ChannelBuilderService = function (_Service) {
               wc.sendInnerTo(senderId, this.id, { shouldConnect: this.WS, listenOn: myConnectObj.listenOn });
             } else if (this.isEqual(myConnectors, this.WR)) {
               ServiceFactory.get(WEB_RTC, wc.settings.iceServers).connectOverWebChannel(wc, senderId).then(function (channel) {
-                return _this4.onChannel(wc, channel, senderId);
+                _this4.onChannel(wc, channel, senderId);
               }).catch(function (reason) {
                 wc.sendInnerTo(senderId, _this4.id, { failedReason: 'Failed establish a data channel: ' + reason });
               });
@@ -2453,7 +3615,7 @@ var SignalingGate = function () {
      * @private
      * @type {external:WebSocket|external:ws/WebSocket|external:EventSource}
      */
-    this.con = null;
+    this.stream = null;
 
     this.onChannel = onChannel;
   }
@@ -2473,109 +3635,102 @@ var SignalingGate = function () {
       var _this = this;
 
       var key = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : this.generateKey();
+      var signaling = arguments[2];
 
-      return new Promise(function (resolve, reject) {
-        _this.getConnectionService(url).connect(url).then(function (sigCon) {
-          sigCon.onclose = function (closeEvt) {
-            return reject(new Error(closeEvt.reason));
-          };
-          sigCon.onerror = function (err) {
-            return reject(err);
-          };
-          sigCon.onmessage = function (evt) {
-            try {
-              var msg = JSON.parse(evt.data);
-              if ('opened' in msg) {
-                if (msg.opened) {
-                  resolve(_this.listenOnOpen(sigCon, key));
-                } else reject(new Error('Could not open with ' + key));
-              } else reject(new Error('Unknown message from ' + url + ': ' + evt.data));
-            } catch (err) {
-              reject(err);
-            }
-          };
-          sigCon.send(JSON.stringify({ open: key }));
-        }).catch(function (err) {
-          reject(err);
+      if (signaling) {
+        return this.listenOnOpen(url, key, signaling);
+      } else {
+        return this.getConnectionService(url).subject(url).then(function (signaling) {
+          return _this.listenOnOpen(url, key, signaling);
         });
-      });
+      }
     }
-
-    /**
-     * Open the gate when the connection with the signaling server exists already.
-     *
-     * @param {WebSocket|RichEventSource} sigCon Connection with the signaling
-     * @param {string} key
-     * @returns {Promise<OpenData, string>}
-     */
-
   }, {
-    key: 'openExisted',
-    value: function openExisted(sigCon, key) {
+    key: 'listenOnOpen',
+    value: function listenOnOpen(url, key, signaling) {
       var _this2 = this;
 
       return new Promise(function (resolve, reject) {
-        sigCon.onclose = function (closeEvt) {
-          return reject(new Error(closeEvt.reason));
-        };
-        sigCon.onerror = function (err) {
-          return reject(err);
-        };
-        sigCon.onmessage = function (evt) {
-          try {
-            var msg = JSON.parse(evt.data);
-            if ('opened' in msg) {
-              if (msg.opened) {
-                resolve(_this2.listenOnOpen(sigCon, key));
-              } else reject(new Error('Could not open with ' + key));
-            } else reject(new Error('Unknown message from ' + sigCon.url + ': ' + evt.data));
-          } catch (err) {
-            reject(err);
+        signaling.filter(function (msg) {
+          return 'first' in msg || 'ping' in msg;
+        }).subscribe(function (msg) {
+          if (msg.first) {
+            _this2.stream = signaling;
+            _this2.key = key;
+            _this2.url = url.endsWith('/') ? url.substr(0, url.length - 1) : url;
+            resolve({ url: _this2.url, key: key });
+          } else if (msg.ping) {
+            signaling.send(JSON.stringify({ pong: true }));
           }
-        };
-        sigCon.send(JSON.stringify({ open: key }));
+        }, function (err) {
+          _this2.onClose();
+          reject(err);
+        }, function () {
+          _this2.onClose();
+          reject(new Error(''));
+        });
+        ServiceFactory.get(WEB_RTC, _this2.webChannel.settings.iceServers).listenFromSignaling(signaling, function (channel) {
+          return _this2.onChannel(channel);
+        });
+        signaling.send(JSON.stringify({ open: key }));
       });
     }
   }, {
     key: 'join',
-    value: function join(url, key) {
+    value: function join(key, url, shouldOpen) {
       var _this3 = this;
 
       return new Promise(function (resolve, reject) {
-        _this3.getConnectionService(url).connect(url).then(function (sigCon) {
-          sigCon.onclose = function (closeEvt) {
-            return reject(closeEvt.reason);
-          };
-          sigCon.onerror = function (err) {
-            return reject(err.message);
-          };
-          sigCon.onmessage = function (evt) {
-            try {
-              var msg = JSON.parse(evt.data);
-              if ('opened' in msg) {
-                if (!msg.opened) {
-                  if ('useThis' in msg) {
-                    if (msg.useThis) {
-                      resolve({ opened: false, con: sigCon });
-                    } else {
-                      reject(new Error('Open a gate with bot server is not possible'));
-                    }
-                  } else {
-                    ServiceFactory.get(WEB_RTC, _this3.webChannel.settings.iceServers).connectOverSignaling(sigCon, key).then(function (dc) {
-                      return resolve({ opened: false, con: dc, sigCon: sigCon });
-                    }).catch(reject);
-                  }
+        _this3.getConnectionService(url).subject(url).then(function (signaling) {
+          var subs = signaling.filter(function (msg) {
+            return 'first' in msg;
+          }).subscribe(function (msg) {
+            if (msg.first) {
+              subs.unsubscribe();
+              if (shouldOpen) {
+                _this3.open(url, key, signaling).then(function () {
+                  return resolve();
+                }).catch(function (err) {
+                  return reject(err);
+                });
+              } else {
+                signaling.close(1000);
+                resolve();
+              }
+            } else {
+              if ('useThis' in msg) {
+                if (msg.useThis) {
+                  subs.unsubscribe();
+                  resolve(signaling.socket);
                 } else {
-                  _this3.listenOnOpen(sigCon, key);
-                  resolve({ opened: true, sigCon: sigCon });
+                  signaling.error(new Error('Failed to join via ' + url + ': uncorrect bot server response'));
                 }
-              } else reject(new Error('Unknown message from ' + url + ': ' + evt.data));
-            } catch (err) {
-              reject(err);
+              } else {
+                ServiceFactory.get(WEB_RTC, _this3.webChannel.settings.iceServers).connectOverSignaling(signaling, key).then(function (dc) {
+                  subs.unsubscribe();
+                  if (shouldOpen) {
+                    _this3.open(url, key, signaling).then(function () {
+                      return resolve(dc);
+                    }).catch(function (err) {
+                      return reject(err);
+                    });
+                  } else {
+                    signaling.close(1000);
+                    resolve(dc);
+                  }
+                }).catch(function (err) {
+                  signaling.close(1000);
+                  signaling.error(err);
+                });
+              }
             }
-          };
-          sigCon.send(JSON.stringify({ join: key }));
-        }).catch(reject);
+          }, function (err) {
+            return reject(err);
+          });
+          signaling.send(JSON.stringify({ join: key }));
+        }).catch(function (err) {
+          return reject(err);
+        });
       });
     }
 
@@ -2589,7 +3744,7 @@ var SignalingGate = function () {
   }, {
     key: 'isOpen',
     value: function isOpen() {
-      return this.con !== null && this.con.readyState === this.con.OPEN;
+      return this.stream !== null;
     }
 
     /**
@@ -2618,7 +3773,7 @@ var SignalingGate = function () {
     key: 'close',
     value: function close() {
       if (this.isOpen()) {
-        this.con.close();
+        this.stream.close(1000);
       }
     }
 
@@ -2640,32 +3795,18 @@ var SignalingGate = function () {
         } else {
           return ServiceFactory.get(EVENT_SOURCE);
         }
-      } else {
-        throw new Error(url + ' is not a valid URL');
       }
+      throw new Error(url + ' is not a valid URL');
     }
   }, {
-    key: 'listenOnOpen',
-    value: function listenOnOpen(sigCon, key) {
-      var _this4 = this;
-
-      ServiceFactory.get(WEB_RTC, this.webChannel.settings.iceServers).listenFromSignaling(sigCon, function (con) {
-        return _this4.onChannel(con);
-      });
-      this.con = sigCon;
-      this.con.onclose = function (closeEvt) {
-        _this4.key = null;
-        _this4.con = null;
-        _this4.url = null;
-        _this4.webChannel.onClose(closeEvt);
-      };
-      this.key = key;
-      if (sigCon.url.endsWith('/')) {
-        this.url = sigCon.url.substr(0, sigCon.url.length - 1);
-      } else {
-        this.url = sigCon.url;
+    key: 'onClose',
+    value: function onClose() {
+      if (this.isOpen()) {
+        this.key = null;
+        this.stream = null;
+        this.url = null;
+        this.webChannel.onClose();
       }
-      return { url: this.url, key: key };
     }
 
     /**
@@ -2698,6 +3839,9 @@ var SignalingGate = function () {
  * @type {number}
  */
 var MAX_ID = 2147483647;
+
+var REJOIN_MAX_ATTEMPTS = 10;
+var REJOIN_TIMEOUT = 2000;
 
 /**
  * Timout for ping `WebChannel` in milliseconds.
@@ -2734,6 +3878,10 @@ var PING = 4;
  * @type {number}
  */
 var PONG = 5;
+
+var INIT_CHANNEL = 6;
+
+var INIT_CHANNEL_BIS = 7;
 
 /**
  * This class is an API starting point. It represents a group of collaborators
@@ -2835,6 +3983,8 @@ var WebChannel = function () {
       return _this.addChannel(ch);
     });
 
+    this.onInitChannel = new Map();
+
     /**
      * Unique `WebChannel` identifier. Its value is the same for all `WebChannel` members.
      * @type {number}
@@ -2888,20 +4038,22 @@ var WebChannel = function () {
     value: function join(keyOrSocket) {
       var _this2 = this;
 
-      var url = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : this.settings.signalingURL;
+      var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
 
+      var settings = {
+        url: this.settings.signalingURL,
+        open: true,
+        rejoinAttempts: REJOIN_MAX_ATTEMPTS,
+        rejoinTimeout: REJOIN_TIMEOUT
+      };
+      Object.assign(settings, options);
       return new Promise(function (resolve, reject) {
         if (keyOrSocket.constructor.name !== 'WebSocket') {
-          _this2.gate.join(url, keyOrSocket).then(function (res) {
-            if (res.opened) {
-              resolve();
-            } else {
-              _this2.onJoin = function () {
-                _this2.gate.openExisted(res.sigCon, keyOrSocket).then(resolve);
-              };
-              _this2.initChannel(res.con).catch(reject);
-            }
-          }).catch(reject);
+          _this2.joinRecursively(keyOrSocket, settings, function () {
+            return resolve();
+          }, function (err) {
+            return reject(err);
+          }, 0);
         } else {
           _this2.onJoin = resolve;
           _this2.initChannel(keyOrSocket).catch(reject);
@@ -2950,14 +4102,10 @@ var WebChannel = function () {
     value: function open() {
       var key = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : null;
 
-      if (Util.isURL(this.settings.signalingURL)) {
-        if (key !== null) {
-          return this.gate.open(this.settings.signalingURL, key);
-        } else {
-          return this.gate.open(this.settings.signalingURL);
-        }
+      if (key !== null) {
+        return this.gate.open(this.settings.signalingURL, key);
       } else {
-        return Promise.reject(new Error(this.settings.signalingURL + ' is not a valid URL'));
+        return this.gate.open(this.settings.signalingURL);
       }
     }
 
@@ -3007,9 +4155,9 @@ var WebChannel = function () {
         this.members = [];
         this.manager.leave(this);
       }
-      if (this.isOpen()) {
-        this.gate.close();
-      }
+      this.onInitChannel = function () {};
+      this.onJoin = function () {};
+      this.gate.close();
     }
 
     /**
@@ -3197,6 +4345,20 @@ var WebChannel = function () {
               } else this.sendInnerTo(header.recepientId, null, data, true);
               break;
             }
+          case INIT_CHANNEL:
+            {
+              this.onInitChannel.get(channel.peerId).resolve();
+              channel.send(this.msgBld.msg(INIT_CHANNEL_BIS, this.myId, channel.peerId));
+              break;
+            }
+          case INIT_CHANNEL_BIS:
+            {
+              var resolver = this.onInitChannel.get(channel.peerId);
+              if (resolver) {
+                resolver.resolve();
+              }
+              break;
+            }
           case PING:
             this.manager.sendTo(header.senderId, this, this.msgBld.msg(PONG, this.myId));
             break;
@@ -3235,20 +4397,26 @@ var WebChannel = function () {
 
       var id = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : -1;
 
-      if (id === -1) id = this.generateId();
-      var channel = new Channel(ch);
-      channel.peerId = id;
-      channel.webChannel = this;
-      channel.onMessage = function (data) {
-        return _this9.onChannelMessage(channel, data);
-      };
-      channel.onClose = function (closeEvt) {
-        return _this9.manager.onChannelClose(closeEvt, channel);
-      };
-      channel.onError = function (evt) {
-        return _this9.manager.onChannelError(evt, channel);
-      };
-      return Promise.resolve(channel);
+      return new Promise(function (_resolve, reject) {
+        if (id === -1) id = _this9.generateId();
+        var channel = new Channel(ch);
+        channel.peerId = id;
+        channel.webChannel = _this9;
+        channel.onMessage = function (data) {
+          return _this9.onChannelMessage(channel, data);
+        };
+        channel.onClose = function (closeEvt) {
+          return _this9.manager.onChannelClose(closeEvt, channel);
+        };
+        channel.onError = function (evt) {
+          return _this9.manager.onChannelError(evt, channel);
+        };
+        _this9.onInitChannel.set(channel.peerId, { resolve: function resolve() {
+            _this9.onInitChannel.delete(channel.peerId);
+            _resolve(channel);
+          } });
+        channel.send(_this9.msgBld.msg(INIT_CHANNEL, _this9.myId, channel.peerId));
+      });
     }
 
     /**
@@ -3268,6 +4436,49 @@ var WebChannel = function () {
     }
 
     /**
+     *
+     * @private
+     * @param  {[type]} key
+     * @param  {[type]} options
+     * @param  {[type]} resolve
+     * @param  {[type]} reject
+     * @param  {[type]} attempt
+     * @return {void}
+     */
+
+  }, {
+    key: 'joinRecursively',
+    value: function joinRecursively(key, options, resolve, reject, attempt) {
+      var _this10 = this;
+
+      this.gate.join(key, options.url, options.open).then(function (connection) {
+        if (connection) {
+          _this10.onJoin = function () {
+            return resolve();
+          };
+          _this10.initChannel(connection).catch(reject);
+        } else {
+          resolve();
+        }
+      }).catch(function (err) {
+        attempt++;
+        console.log('Failed to join via ' + options.url + ' with ' + key + ' key: ' + err.message);
+        if (attempt === options.rejoinAttempts) {
+          reject(new Error('Failed to join via ' + options.url + ' with ' + key + ' key: reached maximum rejoin attempts (' + REJOIN_MAX_ATTEMPTS + ')'));
+        } else {
+          console.log('Trying to rejoin in ' + options.rejoinTimeout + ' the ' + attempt + ' time... ');
+          setTimeout(function () {
+            _this10.joinRecursively(key, options, function () {
+              return resolve();
+            }, function (err) {
+              return reject(err);
+            }, attempt);
+          }, options.rejoinTimeout);
+        }
+      });
+    }
+
+    /**
      * Generate random id for a `WebChannel` or a new peer.
      * @private
      * @returns {number} - Generated id
@@ -3276,16 +4487,16 @@ var WebChannel = function () {
   }, {
     key: 'generateId',
     value: function generateId() {
-      var _this10 = this;
+      var _this11 = this;
 
       var _loop = function _loop() {
         var id = Math.ceil(Math.random() * MAX_ID);
-        if (id === _this10.myId) return 'continue';
-        if (_this10.members.includes(id)) return 'continue';
-        if (_this10.generatedIds.has(id)) return 'continue';
-        _this10.generatedIds.add(id);
+        if (id === _this11.myId) return 'continue';
+        if (_this11.members.includes(id)) return 'continue';
+        if (_this11.generatedIds.has(id)) return 'continue';
+        _this11.generatedIds.add(id);
         setTimeout(function () {
-          return _this10.generatedIds.delete(id);
+          return _this11.generatedIds.delete(id);
         }, ID_TIMEOUT);
         return {
           v: id
@@ -4041,9 +5252,9 @@ var BotServer = function () {
               if ('join' in msg) {
                 var wc = _this.getWebChannel(msg.join);
                 if (wc === null) {
-                  ws.send(JSON.stringify({ opened: false, useThis: false }));
+                  ws.send(JSON.stringify({ first: false, useThis: false }));
                 } else {
-                  ws.send(JSON.stringify({ opened: false, useThis: true }));
+                  ws.send(JSON.stringify({ first: false, useThis: true }));
                   wc.invite(ws);
                 }
               } else if ('wcId' in msg) {

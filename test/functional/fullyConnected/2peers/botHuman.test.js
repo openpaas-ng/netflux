@@ -48,7 +48,7 @@ describe('🤖 🙂  fully connected', () => {
     })
 
     for (let i of helper.INSTANCES) {
-      it('broadcast: ' + i.prototype.constructor.name, done => {
+      xit('broadcast: ' + i.prototype.constructor.name, done => {
         const data = helper.randData(i)
         helper.sendReceive(wc, data, done)
       })
@@ -58,7 +58,7 @@ describe('🤖 🙂  fully connected', () => {
       helper.sendReceive(wc, smallStr, done)
     })
 
-    xit('broadcast: ~4 MB string', done => {
+    helper.xitBrowser('broadcast: ~4 MB string', done => {
       helper.sendReceive(wc, bigStr, done)
     }, 10000)
 
@@ -102,7 +102,10 @@ describe('🤖 🙂  fully connected', () => {
         expect(wc.members.length).toEqual(0)
         wc.ping()
           .then(done.fail)
-          .catch(done)
+          .catch(() => {
+            wc.leave()
+            done()
+          })
       }
       wc.sendTo(wc.members[0], JSON.stringify({code: helper.LEAVE_CODE}))
     })
