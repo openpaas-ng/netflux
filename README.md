@@ -1,9 +1,14 @@
-# <p align="center">Netflux</p>
+<p align="center">
+  <a href="https://coast-team.github.io/netflux">
+    <img src="manual/asset/logo_cropped.png" />
+  </a>
+</p>
 
 <p align="center">
   Universal Javascript <strong style="font-weight: bold">peer to peer</strong> transport API for client and server.<br />
-  Permits to create a fully connected peer to peer network based on <strong style="font-weight: bold">WebRTC</strong> and <strong style="font-weight: bold">WebSocket</strong>.<br />
-  Allows to send/receive <strong style="font-weight: bold">String</strong>, <strong style="font-weight: bold">ArrayBuffer</strong>, <strong style="font-weight: bold">TypedArray</strong> data types over the network.
+  Secure and fault tolerant full mesh peer to peer network based on <strong style="font-weight: bold">RTCDataChannel</strong> and <strong style="font-weight: bold">WebSocket</strong>.<br />
+  Send/receive <strong style="font-weight: bold">String</strong> and <strong style="font-weight: bold">Uint8Array</strong> data types.<br />
+  Documentation: https://coast-team.github.io/netflux
 </p>
 
 <p align="center">
@@ -13,130 +18,134 @@
   <a href="https://travis-ci.org/coast-team/netflux">
     <img src="https://travis-ci.org/coast-team/netflux.svg?branch=master" />
   </a>&nbsp;
-  <a href="https://github.com/semantic-release/semantic-release">
-    <img src="https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg?style=flat-square" />
+  <a href="https://coast-team.github.io/netflux">
+    <img src="https://coast-team.github.io/netflux/badge.svg" />
   </a>&nbsp;
-  <a href="https://gitter.im/coast-team/netflux?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge">
-    <img src="https://img.shields.io/badge/GITTER-join%20chat-green.svg?style=flat-square" />
-  </a>
+  <a href="https://www.bithound.io/github/coast-team/netflux">
+    <img src="https://www.bithound.io/github/coast-team/netflux/badges/score.svg" />
+  </a>&nbsp;
 
   <br />
 
   <a href="http://commitizen.github.io/cz-cli">
     <img src="https://img.shields.io/badge/commitizen-friendly-brightgreen.svg?style=flat-square" />
   </a>&nbsp;
-  <a href="https://www.bithound.io/github/coast-team/netflux">
-    <img src="https://www.bithound.io/github/coast-team/netflux/badges/score.svg" />
+  <a href="https://github.com/semantic-release/semantic-release">
+    <img src="https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg?style=flat-square" />
   </a>&nbsp;
-  <a href="https://codeclimate.com/github/coast-team/netflux">
-    <img src="https://codeclimate.com/github/coast-team/netflux/badges/gpa.svg" />
-  </a>&nbsp;
-  <a href="https://codeclimate.com/github/coast-team/netflux/coverage">
-    <img src="https://codeclimate.com/github/coast-team/netflux/badges/coverage.svg" />
-  </a>&nbsp;
-  <a href="https://doc.esdoc.org/github.com/coast-team/netflux">
-    <img src="https://doc.esdoc.org/github.com/coast-team/netflux/badge.svg" />
+  <a href="https://gitter.im/coast-team/netflux?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge">
+    <img src="https://img.shields.io/badge/GITTER-join%20chat-green.svg?style=flat-square" />
   </a>
 </p>
 
 <p align="center">
-  <img src="manual/asset/example_support.png" />
+  <img src="manual/asset/example.png" />
 </p>
 
 ## Features
-- Universal API (works in browser and server)
-- Creates peer to peer full mesh network
-- Allows to send/receive [String][String], [ArrayBuffer][ArrayBuffer], [TypedArray][TypedArray] data types.
-- Allows mixed connections between peers ([WebSocket][WebSocket] or [RTCDataChannel][RTCDataChannel])
-- Automatically chooses between [WebSocket][WebSocket] & [RTCDataChannel][RTCDataChannel]
-- No server is mandatory, except signaling server ([Sigver][Sigver])
-- Signaling and ICE server URLs are parameterized (see [doc page][Netflux:Configuration]), which allows to have the whole control over the peer to peer network
-- Built with DEFAULT Signaling and STUN servers for easy quick start ([doc page][Netflux:Configuration])
-- Each peer acts as a Signaling server to establish connection between two other peers (Signaling server is still mandatory for the first connection in the network, but this feature helps to reduce the Signaling server load)
-- Provides 3 builds:
- - `dist/netflux.es5.module.browser.js` ES5 code, ES6 module for browser (exports `create` function and does not contain any NodeJS related code)
- - `dist/netflux.es5.module.node.js` ES5 code, ECMAScript 6 module for NodeJS (exports `create` function, plus `BotServer` class)
- - `dist/netflux.es5.umd.js` ES5 code, UMD module format for both browser and NodeJS
-- `package.json` has `module` and `browser` attributes which understood be **Webpack**, **Browserify** or other module bundlers for easy consumption.
 
-## Table of contents
- - [Installation](https://doc.esdoc.org/github.com/coast-team/netflux/manual/installation.html)
- - [Usage](https://doc.esdoc.org/github.com/coast-team/netflux/manual/usage.html)
- - [Configuration](https://doc.esdoc.org/github.com/coast-team/netflux/manual/configuration.html)
- - [Example](https://doc.esdoc.org/github.com/coast-team/netflux/manual/example.html)
+* Peer to peer full mesh network which accepts connection failures between some peers.
+* If connection between two members failed, other members will retransmit messages for them.
+* Automatic rejoin the group if connection lost.
+* Automatic selection between [WebSocket][WebSocket] & [RTCDataChannel][RTCDataChannel].
+* Possible to have mixed members: clients (Chrome, Firefox) and servers (NodeJS bot).
+* Send private or broadcast [String][String], [Uint8Array][Uint8Array] data types.
+* Possible to send big size data.
+* All connections are encrypted.
+* Full control over WebRTC servers: Signaling, STUN and TURN.
+  * Deploy your own Signaling server ([Sigver][Sigver]) or use one provided by default.
+  * Configure STUN and TURN servers.
+* Small Signaling server payload.
+* Signaling server is used only to establish connection between two peers, no user data is passing through it.
+* Universal API (works in Chrome/Firefox and NodeJS).
+* TypeScript declaration files are included.
+* Simple and familiar API usage.
+* 4 builds (ES5 code):
+  * `dist/netflux.cjs.js` * CommonJS format for NodeJS (see *package.json#main*).
+  * `dist/esm/index.node.js` * ES module format for NodeJS (see *package.json#module*).
+  * `dist/esm/index.browser.js` * ES module format for browsers (see *package.json#browser*).
+  * `dist/netflux.umd.js` * UMD format for browsers.
 
-Full documentation: https://doc.esdoc.org/github.com/coast-team/netflux
+## Usage
 
-## API
-`create` function is the start point, unless you are developing a peer bot, then consider using `BotServer` (see below). `create` functions return an object of type `WebChannel` which represents the peer to peer network.
+Here is a basic usage example for client and server (checkout the [documenation](https://coast-team.github.io/netflux) for more details).
 
- - [**create**(settings): WebChannel](https://doc.esdoc.org/github.com/coast-team/netflux/function/index.html#static-function-create)
+> It is possible to have only clients without any bot server as his is not a mandatory member, but like any other group member.
 
- Members:
-  - [**id**: number](https://doc.esdoc.org/github.com/coast-team/netflux/class/src/WebChannel.js~WebChannel.html#instance-member-id)
-  - [**members**: number[]](https://doc.esdoc.org/github.com/coast-team/netflux/class/src/WebChannel.js~WebChannel.html#instance-member-members)
-  - [**myId**: number**](https://doc.esdoc.org/github.com/coast-team/netflux/class/src/WebChannel.js~WebChannel.html#instance-member-myId)
-  - [**onMessage**: function (peerId: number, msg: UserMessage, isBroadcast: boolean)**](https://doc.esdoc.org/github.com/coast-team/netflux/class/src/WebChannel.js~WebChannel.html#instance-member-onMessage)
-  - [**onPeerJoin**: function (peerId: number)](https://doc.esdoc.org/github.com/coast-team/netflux/class/src/WebChannel.js~WebChannel.html#instance-member-onPeerJoin)
-  - [**onPeerLeave**: function (peerId: number)**](https://doc.esdoc.org/github.com/coast-team/netflux/class/src/WebChannel.js~WebChannel.html#instance-member-onPeerLeave)
-  - [**onClose**: function (closeEvt: CloseEvent)**](https://doc.esdoc.org/github.com/coast-team/netflux/class/src/WebChannel.js~WebChannel.html#instance-member-onClose)
+### Client
 
-  Methods:
+```javascript
+import { WebGroup, WebGroupState } from 'netflux'
 
-  ```
-  Open method allows other peers to join your network.
-  ```
+// Create instance and set callbacks
+const wg = new WebGroup()
+wg.onMemberJoin = (id) => {
+  console.log('Member ' + id + ' has joined')
+  console.log('All members are: ', wg.members)
+}
+wg.onMemberLeave = (id) => {
+  console.log('Member ' + id + ' has left')
+  console.log('All members are: ', wg.members)
+}
+wg.onMessage = (id, data) => {
+  console.log(`Message from ${id} group member`, data)
+}
+wg.onStateChange = (state) => {
+  console.log('The new Group state is ', state)
+  switch (state) {
+    case WebGroupState.JOINING:
+      // Do something
+      break
+    case WebGroupState.JOINED:
+      // Do something
+      // For example inviting a bot...
+      wg.invite('BOT_SERVER_WEB_SOCKET_URL')
+      break
+    case WebGroupState.LEAVING:
+      // Do something
+      break
+    case WebGroupState.LEFT:
+      // Do something
+      break
+  }
+}
 
-  - [**open**([options: OpenData]): Promise<OpenData, string>](https://doc.esdoc.org/github.com/coast-team/netflux/class/src/WebChannel.js~WebChannel.html#instance-method-open)
-  - [**getOpenData**(): OpenData | null](https://doc.esdoc.org/github.com/coast-team/netflux/class/src/WebChannel.js~WebChannel.html#instance-method-getOpenData)
-  - [**isOpen**(): boolean](https://doc.esdoc.org/github.com/coast-team/netflux/class/src/WebChannel.js~WebChannel.html#instance-method-isOpen)
-  - [**close**()](https://doc.esdoc.org/github.com/coast-team/netflux/class/src/WebChannel.js~WebChannel.html#instance-method-close)
+// Join the group
+wg.join('MY_UNIQUE_KEY_FOR_THE_GROUP')
+```
 
-  ```
-  After someone has opened his network and has provided the key to you, you can join his network.
-  ```
-  - [**join**(keyOrSocket: string | WebSocket[, url: string]): Promise<undefined, string>](https://doc.esdoc.org/github.com/coast-team/netflux/class/src/WebChannel.js~WebChannel.html#instance-method-join)
-  - [**leave**()](https://doc.esdoc.org/github.com/coast-team/netflux/class/src/WebChannel.js~WebChannel.html#instance-method-leave)
+### Bot Server
 
-  ```
-  Any member can invite a peer bot (server) to join this network.
-  ```
-  - [**invite**(urlOrSocket: string | WebSocket): Promise<undefined, string>](https://doc.esdoc.org/github.com/coast-team/netflux/class/src/WebChannel.js~WebChannel.html#instance-method-invite)
+```javascript
+import { WebGroupBotServer } from 'netflux'
+const http = require('http') // https is also possible
+const server = http.createServer()
 
-  ```
-  Any member is allowed to send a message.
-  ```
-  - [**send**(message: UserMessage)](https://doc.esdoc.org/github.com/coast-team/netflux/class/src/WebChannel.js~WebChannel.html#instance-method-send)
-  - [**sendTo**(peerId: number, message: UserMessage)](https://doc.esdoc.org/github.com/coast-team/netflux/class/src/WebChannel.js~WebChannel.html#instance-method-sendTo)
+const bot = new WebGroupBotServer({
+  server: server,
+  webGroupOptions: {
+    // Any WebGroup options like for a client
+  }
+})
 
-  ```
-  Or ping.
-  ```
-  - [**ping**(): Promise<number, string>](https://doc.esdoc.org/github.com/coast-team/netflux/class/src/WebChannel.js~WebChannel.html#instance-method-ping)
- - [**WEB_RTC**](https://doc.esdoc.org/github.com/coast-team/netflux/variable/index.html#static-variable-WEB_RTC) constant
- - [**WEB_SOCKET**](https://doc.esdoc.org/github.com/coast-team/netflux/variable/index.html#static-variable-WEB_SOCKET) constant
- - [**BotServer**(settings)](https://doc.esdoc.org/github.com/coast-team/netflux/class/src/BotServer.js~BotServer.html)
+bot.onWebGroup = (wg) => {
+  // New instance of a WebGroup (Someone has invited this bot).
+  // See example above for client as it is the same API.
+}
 
-   Members:
+server.listen(BOT_PORT, _BOT_HOST)
+// A client may invite this bot with the following URL: 'ws://BOT_HOST:BOT_PORT'
+```
 
-   - [**onWebChannel**: function (wc: WebChannel)](https://doc.esdoc.org/github.com/coast-team/netflux/class/src/BotServer.js~BotServer.html#instance-member-onWebChannel)
-   - [**webChannels**: WebChannel[]](https://doc.esdoc.org/github.com/coast-team/netflux/class/src/BotServer.js~BotServer.html#instance-member-webChannels)
+## Demo
 
-   Methods:
-   - [**start**(): Promise<undefined, string](https://doc.esdoc.org/github.com/coast-team/netflux/class/src/BotServer.js~BotServer.html#instance-method-start)
-   - [**stop**()](https://doc.esdoc.org/github.com/coast-team/netflux/class/src/BotServer.js~BotServer.html#instance-method-stop)
-   - [**addWebChannel**(wc: WebChannel)](https://doc.esdoc.org/github.com/coast-team/netflux/class/src/BotServer.js~BotServer.html#instance-method-addWebChannel)
-   - [**removeWebChannel**(wc: WebChannel)](https://doc.esdoc.org/github.com/coast-team/netflux/class/src/BotServer.js~BotServer.html#instance-method-removeWebChannel)
-   - [**getWebChannel**(id: number): WebChannel | null](https://doc.esdoc.org/github.com/coast-team/netflux/class/src/BotServer.js~BotServer.html#instance-method-getWebChannel)
-
+Netflux is used by our team for Multi User Text Editor ([MUTE repo](https://github.com/coast-team/mute)) development. The demo version is available on: https://coedit.re
 
 [WebSocket]: https://developer.mozilla.org/en/docs/Web/API/WebSocket
 [RTCDataChannel]: https://developer.mozilla.org/en/docs/Web/API/RTCDataChannel
 [String]: https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/String
-[ArrayBuffer]: https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/ArrayBuffer
-[TypedArray]: https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/TypedArray
+[Uint8Array]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array
 [Sigver]: https://github.com/coast-team/sigver
-[Netflux:Configuration]: https://doc.esdoc.org/github.com/coast-team/netflux/manual/configuration/configuration.html
 
 [commitizen]: https://img.shields.io/badge/commitizen-friendly-brightgreen.svg?style=flat-square
 [commitizen-url]: http://commitizen.github.io/cz-cli
@@ -150,5 +159,7 @@ Full documentation: https://doc.esdoc.org/github.com/coast-team/netflux
 [coverage]: https://codeclimate.com/github/coast-team/netflux/badges/coverage.svg
 [coverage-url]: https://codeclimate.com/github/coast-team/netflux/coverage
 
-[doc]: https://doc.esdoc.org/github.com/coast-team/netflux/badge.svg
-[doc-url]: https://doc.esdoc.org/github.com/coast-team/netflux
+[doc]: https://coast-team.github.io/netflux/badge.svg
+[doc-url]: https://coast-team.github.io/netflux/netflux
+
+[logo]: manual/asset/logo_cropped.png "Netflux logo"

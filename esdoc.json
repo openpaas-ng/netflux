@@ -1,12 +1,44 @@
 {
-  "source": "src",
-  "destination": "./esdoc",
-  "title": "Netflux",
-  "manual": {
-    "asset": "manual/asset",
-    "usage": ["manual/usage.md"],
-    "installation": ["manual/installation.md"],
-    "configuration": ["manual/configuration.md"],
-    "example": ["manual/examples/3peers.md"]
-  }
+  "source": "./docs/jsFromTs/src",
+  "destination": "./docs",
+  "includes": [".*Facade\\.js", ".*index\\.common\\.js"],
+  "plugins": [
+    {
+      "name": "esdoc-standard-plugin",
+      "option": {
+        "accessor": {"access": ["public", "protected", "private"], "autoPrivate": false},
+        "undocumentIdentifier": {"enable": false},
+        "unexportedIdentifier": {"enable": true},
+        "typeInference": {"enable": false},
+        "brand": {
+          "logo": "./manual/asset/logo_favicon.jpg",
+          "title": "Netflux",
+          "description": "Abstract peer to peer client transport API. Implementations based on WebRTC and webSocket to be done.",
+          "repository": "https://github.com/coast-team/netflux"
+        },
+        "manual": {
+          "index": "./manual/index.md",
+          "globalIndex": true,
+          "asset": "./manual/asset",
+          "files": [
+            "./manual/installation.md",
+            "./manual/usage.md",
+            "./manual/knownobstacles.md"
+          ]
+        },
+        "test": {
+          "source": "./docs/jsFromTs/test/",
+          "interfaces": ["describe", "it"],
+          "includes": ["(spec|Spec|test|Test)\\.js$"]
+        }
+      }
+    },
+    {
+      "name": "esdoc-inject-style-plugin",
+      "option": {
+        "enable": true,
+        "styles": ["./manual/style.css"]
+      }
+    }
+  ]
 }

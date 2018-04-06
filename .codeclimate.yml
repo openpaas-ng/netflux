@@ -1,8 +1,14 @@
-engines:
-  eslint:
+version: "2"
+plugins:
+  tslint:
     enabled: true
+    config: tslint.json
   fixme:
     enabled: true
-ratings:
-  paths:
-    "src/**/*.js"
+exclude_patterns:
+- "**/*.d.ts"
+- "**/*.js"
+- "test/**"
+- "docs/**"
+- "manual/**"
+- "src/proto/"

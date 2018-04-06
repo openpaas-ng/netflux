@@ -1,0 +1,1871 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <base data-ice="baseUrl" href="../../">
+  <title data-ice="title">WebGroup | Netflux</title>
+  <link type="text/css" rel="stylesheet" href="css/style.css">
+  <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
+  <script src="script/prettify/prettify.js"></script>
+  <script src="script/manual.js"></script>
+<link rel="stylesheet" href="./inject/css/0-style.css"><meta name="description" content="Abstract peer to peer client transport API. Implementations based on WebRTC and webSocket to be done."><meta property="twitter:card" content="summary"><meta property="twitter:title" content="Netflux"><meta property="twitter:description" content="Abstract peer to peer client transport API. Implementations based on WebRTC and webSocket to be done."></head>
+<body class="layout-container" data-ice="rootContainer">
+
+<header>
+  <a href="./" style="display: flex; align-items: center;"><img src="./image/brand_logo.png" style="width:34px;"></a>
+  
+  <a href="identifiers.html">Reference</a>
+  <a href="source.html">Source</a>
+  <a href="test.html" data-ice="testLink">Test</a>
+  <div class="search-box">
+  <span>
+    <img src="./image/search.png">
+    <span class="search-input-edge"></span><input class="search-input"><span class="search-input-edge"></span>
+  </span>
+    <ul class="search-result"></ul>
+  </div>
+<a style="position:relative; top:3px;" href="https://github.com/coast-team/netflux"><img width="20px" src="./image/github.png"></a></header>
+
+<nav class="navigation" data-ice="nav"><div>
+  <ul>
+    
+  <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/BotServerFacade.js~WebGroupBotServer.html">WebGroupBotServer</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/WebChannelFacade.js~WebGroup.html">WebGroup</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/WebChannelFacade.js~WebGroupState.html">WebGroupState</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/index.common.js~LogLevel.html">LogLevel</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/index.common.js~SignalingState.html">SignalingState</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/index.common.js~Topology.html">Topology</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-setLogLevel">setLogLevel</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-DataType">DataType</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-WebGroupBotServerOptions">WebGroupBotServerOptions</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-WebGroupOptions">WebGroupOptions</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-external">E</span><span data-ice="name"><span><a href="https://nodejs.org/api/http.html#http_class_http_server">NodeJSHttpServer</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-external">E</span><span data-ice="name"><span><a href="https://nodejs.org/api/https.html#https_class_https_server">NodeJSHttpsServer</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-external">E</span><span data-ice="name"><span><a href="https://developer.mozilla.org/en/docs/Web/API/RTCConfiguration">RTCConfiguration</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-external">E</span><span data-ice="name"><span><a href="https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array">Uint8Array</a></span></span></li>
+</ul>
+</div>
+</nav>
+
+<div class="content" data-ice="content"><div class="header-notice">
+  <div data-ice="importPath" class="import-path"><pre class="prettyprint"><code data-ice="importPathCode">import {WebGroup} from &apos;<span><a href="file/src/WebChannelFacade.js.html#lineNumber98">netflux/src/WebChannelFacade.js</a></span>&apos;</code></pre></div>
+  <span data-ice="access">public</span>
+  <span data-ice="kind">class</span>
+  
+  
+  
+  <span data-ice="source">| <span><a href="file/src/WebChannelFacade.js.html#lineNumber98">source</a></span></span>
+</div>
+
+<div class="self-detail detail">
+  <h1 data-ice="name">WebGroup</h1>
+
+  
+
+  
+  
+  
+  
+  
+  
+  
+  
+  
+
+  
+  
+  <div class="description" data-ice="description"><p>This class is an API starting point. It represents a peer to peer network,
+simply called a group. Each group member can send/receive broadcast
+as well as personal messages, invite other persons or bots (see <span><a href="class/src/BotServerFacade.js~WebGroupBotServer.html">WebGroupBotServer</a></span>).</p>
+</div>
+  
+
+  
+
+  <div data-ice="exampleDocs">
+    <h4>Example:</h4>
+    
+  <div class="example-doc" data-ice="exampleDoc">
+      
+      <pre class="prettyprint source-code"><code data-ice="exampleCode">// Create a WebGroup with full mesh topology, autorejoin feature and
+// specified Signaling and ICE servers for WebRTC.
+
+const wg = new WebGroup({
+  signalingServer: &apos;wss://mysignaling.com&apos;,
+  rtcConfiguration: {
+    iceServers: [
+      {
+        urls: &apos;stun.l.google.com:19302&apos;
+      },
+      {
+        urls: [&apos;turn:myturn.com?transport=udp&apos;, &apos;turn:myturn?transport=tcp&apos;],
+        username: &apos;user&apos;,
+        password: &apos;password&apos;
+      }
+    ]
+  }
+})
+
+wg.onMemberJoin = (id) =&gt; {
+  // YOUR CODE...
+}
+wg.onMemberLeave = (id) =&gt; {
+  // YOUR CODE...
+}
+wg.onMessage = (id, data) =&gt; {
+  // YOUR CODE...
+}
+wg.onStateChange = (state) =&gt; {
+  // YOUR CODE...
+}
+wg.onSignalingStateChange = (state) =&gt; {
+  // YOUR CODE...
+}</code></pre>
+    </div>
+</div>
+
+  <div data-ice="tests">
+    <h4>Test:</h4>
+    <ul>
+      
+    <li data-ice="test"><span><a href="test-file/test/functional/1member.test.js.html#lineNumber9">1 member</a></span></li>
+<li data-ice="test"><span><a href="test-file/test/functional/2members.test.js.html#lineNumber10">2 members</a></span></li>
+<li data-ice="test"><span><a href="test-file/test/functional/3members.test.js.html#lineNumber10">3 members</a></span></li>
+</ul>
+  </div>
+
+  
+</div>
+
+
+
+<div data-ice="constructorSummary"><h2>Constructor Summary</h2><table class="summary" data-ice="summary">
+  <thead><tr><td data-ice="title" colspan="3">Public Constructor</td></tr></thead>
+  <tbody>
+  
+  <tr data-ice="target">
+    <td>
+      <span class="access" data-ice="access">public</span>
+      
+      
+      
+      <span class="override" data-ice="override"></span>
+    </td>
+    <td>
+      <div>
+        <p>
+          
+          
+          
+          <span class="code" data-ice="name"><span><a href="class/src/WebChannelFacade.js~WebGroup.html#instance-constructor-constructor">constructor</a></span></span><span class="code" data-ice="signature">(options: <span><a href="typedef/index.html#static-typedef-WebGroupOptions">WebGroupOptions</a></span>)</span>
+        </p>
+      </div>
+      <div>
+        
+        
+        
+      </div>
+    </td>
+    <td>
+      
+      
+    </td>
+  </tr>
+</tbody>
+</table>
+</div>
+<div data-ice="memberSummary"><h2>Member Summary</h2><table class="summary" data-ice="summary">
+  <thead><tr><td data-ice="title" colspan="3">Public Members</td></tr></thead>
+  <tbody>
+  
+  <tr data-ice="target">
+    <td>
+      <span class="access" data-ice="access">public</span>
+      
+      
+      
+      <span class="override" data-ice="override"></span>
+    </td>
+    <td>
+      <div>
+        <p>
+          
+          
+          
+          <span class="code" data-ice="name"><span><a href="class/src/WebChannelFacade.js~WebGroup.html#instance-member-autoRejoin">autoRejoin</a></span></span><span class="code" data-ice="signature">: <span>boolean</span></span>
+        </p>
+      </div>
+      <div>
+        
+        
+        <div data-ice="description"><p>Enable/Desable the auto rejoin feature.</p>
+</div>
+      </div>
+    </td>
+    <td>
+      
+      
+    </td>
+  </tr>
+<tr data-ice="target">
+    <td>
+      <span class="access" data-ice="access">public</span>
+      
+      
+      
+      <span class="override" data-ice="override"></span>
+    </td>
+    <td>
+      <div>
+        <p>
+          
+          
+          
+          <span class="code" data-ice="name"><span><a href="class/src/WebChannelFacade.js~WebGroup.html#instance-member-id">id</a></span></span><span class="code" data-ice="signature">: <span>number</span></span>
+        </p>
+      </div>
+      <div>
+        
+        
+        <div data-ice="description"><p>The read-only <span><a href="class/src/WebChannelFacade.js~WebGroup.html">WebGroup</a></span> identifier.</p>
+</div>
+      </div>
+    </td>
+    <td>
+      
+      
+    </td>
+  </tr>
+<tr data-ice="target">
+    <td>
+      <span class="access" data-ice="access">public</span>
+      
+      
+      
+      <span class="override" data-ice="override"></span>
+    </td>
+    <td>
+      <div>
+        <p>
+          
+          
+          
+          <span class="code" data-ice="name"><span><a href="class/src/WebChannelFacade.js~WebGroup.html#instance-member-key">key</a></span></span><span class="code" data-ice="signature">: <span>string</span></span>
+        </p>
+      </div>
+      <div>
+        
+        
+        <div data-ice="description"><p>The read-only group session identifier.</p>
+</div>
+      </div>
+    </td>
+    <td>
+      
+      
+    </td>
+  </tr>
+<tr data-ice="target">
+    <td>
+      <span class="access" data-ice="access">public</span>
+      
+      
+      
+      <span class="override" data-ice="override"></span>
+    </td>
+    <td>
+      <div>
+        <p>
+          
+          
+          
+          <span class="code" data-ice="name"><span><a href="class/src/WebChannelFacade.js~WebGroup.html#instance-member-members">members</a></span></span><span class="code" data-ice="signature">: <span><span>number</span><span>[]</span></span></span>
+        </p>
+      </div>
+      <div>
+        
+        
+        <div data-ice="description"><p>The read-only array of all members including yourself (i.e.</p>
+</div>
+      </div>
+    </td>
+    <td>
+      
+      
+    </td>
+  </tr>
+<tr data-ice="target">
+    <td>
+      <span class="access" data-ice="access">public</span>
+      
+      
+      
+      <span class="override" data-ice="override"></span>
+    </td>
+    <td>
+      <div>
+        <p>
+          
+          
+          
+          <span class="code" data-ice="name"><span><a href="class/src/WebChannelFacade.js~WebGroup.html#instance-member-myId">myId</a></span></span><span class="code" data-ice="signature">: <span>number</span></span>
+        </p>
+      </div>
+      <div>
+        
+        
+        <div data-ice="description"><p>The read-only your unique member identifier in the group.</p>
+</div>
+      </div>
+    </td>
+    <td>
+      
+      
+    </td>
+  </tr>
+<tr data-ice="target">
+    <td>
+      <span class="access" data-ice="access">public</span>
+      
+      
+      
+      <span class="override" data-ice="override"></span>
+    </td>
+    <td>
+      <div>
+        <p>
+          
+          
+          
+          <span class="code" data-ice="name"><span><a href="class/src/WebChannelFacade.js~WebGroup.html#instance-member-onMemberJoin">onMemberJoin</a></span></span><span class="code" data-ice="signature">: <span><span>function</span><span>(id: <span>number</span>)</span></span></span>
+        </p>
+      </div>
+      <div>
+        
+        
+        <div data-ice="description"><p>This handler is called when a new member with <code>id</code> as identifier has joined the group.</p>
+</div>
+      </div>
+    </td>
+    <td>
+      
+      
+    </td>
+  </tr>
+<tr data-ice="target">
+    <td>
+      <span class="access" data-ice="access">public</span>
+      
+      
+      
+      <span class="override" data-ice="override"></span>
+    </td>
+    <td>
+      <div>
+        <p>
+          
+          
+          
+          <span class="code" data-ice="name"><span><a href="class/src/WebChannelFacade.js~WebGroup.html#instance-member-onMemberLeave">onMemberLeave</a></span></span><span class="code" data-ice="signature">: <span><span>function</span><span>(id: <span>number</span>)</span></span></span>
+        </p>
+      </div>
+      <div>
+        
+        
+        <div data-ice="description"><p>This handler is called when a member with <code>id</code> as identifier hes left the group.</p>
+</div>
+      </div>
+    </td>
+    <td>
+      
+      
+    </td>
+  </tr>
+<tr data-ice="target">
+    <td>
+      <span class="access" data-ice="access">public</span>
+      
+      
+      
+      <span class="override" data-ice="override"></span>
+    </td>
+    <td>
+      <div>
+        <p>
+          
+          
+          
+          <span class="code" data-ice="name"><span><a href="class/src/WebChannelFacade.js~WebGroup.html#instance-member-onMessage">onMessage</a></span></span><span class="code" data-ice="signature">: <span><span>function</span><span>(id: <span>number</span>, data: <span><a href="typedef/index.html#static-typedef-DataType">DataType</a></span>)</span></span></span>
+        </p>
+      </div>
+      <div>
+        
+        
+        <div data-ice="description"><p>This handler is called when a message has been received from the group.</p>
+</div>
+      </div>
+    </td>
+    <td>
+      
+      
+    </td>
+  </tr>
+<tr data-ice="target">
+    <td>
+      <span class="access" data-ice="access">public</span>
+      
+      
+      
+      <span class="override" data-ice="override"></span>
+    </td>
+    <td>
+      <div>
+        <p>
+          
+          
+          
+          <span class="code" data-ice="name"><span><a href="class/src/WebChannelFacade.js~WebGroup.html#instance-member-onSignalingStateChange">onSignalingStateChange</a></span></span><span class="code" data-ice="signature">: <span><span>function</span><span>(state: <span><a href="class/src/index.common.js~SignalingState.html">SignalingState</a></span>)</span></span></span>
+        </p>
+      </div>
+      <div>
+        
+        
+        <div data-ice="description"><p>This handler is called when the signaling state has changed.</p>
+</div>
+      </div>
+    </td>
+    <td>
+      
+      
+    </td>
+  </tr>
+<tr data-ice="target">
+    <td>
+      <span class="access" data-ice="access">public</span>
+      
+      
+      
+      <span class="override" data-ice="override"></span>
+    </td>
+    <td>
+      <div>
+        <p>
+          
+          
+          
+          <span class="code" data-ice="name"><span><a href="class/src/WebChannelFacade.js~WebGroup.html#instance-member-onStateChange">onStateChange</a></span></span><span class="code" data-ice="signature">: <span><span>function</span><span>(state: <span><a href="class/src/WebChannelFacade.js~WebGroupState.html">WebGroupState</a></span>)</span></span></span>
+        </p>
+      </div>
+      <div>
+        
+        
+        <div data-ice="description"><p>This handler is called when the group state has changed.</p>
+</div>
+      </div>
+    </td>
+    <td>
+      
+      
+    </td>
+  </tr>
+<tr data-ice="target">
+    <td>
+      <span class="access" data-ice="access">public</span>
+      
+      
+      
+      <span class="override" data-ice="override"></span>
+    </td>
+    <td>
+      <div>
+        <p>
+          
+          
+          
+          <span class="code" data-ice="name"><span><a href="class/src/WebChannelFacade.js~WebGroup.html#instance-member-signalingServer">signalingServer</a></span></span><span class="code" data-ice="signature">: <span>string</span></span>
+        </p>
+      </div>
+      <div>
+        
+        
+        <div data-ice="description"><p>The read-only signaling server URL.</p>
+</div>
+      </div>
+    </td>
+    <td>
+      
+      
+    </td>
+  </tr>
+<tr data-ice="target">
+    <td>
+      <span class="access" data-ice="access">public</span>
+      
+      
+      
+      <span class="override" data-ice="override"></span>
+    </td>
+    <td>
+      <div>
+        <p>
+          
+          
+          
+          <span class="code" data-ice="name"><span><a href="class/src/WebChannelFacade.js~WebGroup.html#instance-member-signalingState">signalingState</a></span></span><span class="code" data-ice="signature">: <span><a href="class/src/index.common.js~SignalingState.html">SignalingState</a></span></span>
+        </p>
+      </div>
+      <div>
+        
+        
+        <div data-ice="description"><p>The read-only state of the signaling server.</p>
+</div>
+      </div>
+    </td>
+    <td>
+      
+      
+    </td>
+  </tr>
+<tr data-ice="target">
+    <td>
+      <span class="access" data-ice="access">public</span>
+      
+      
+      
+      <span class="override" data-ice="override"></span>
+    </td>
+    <td>
+      <div>
+        <p>
+          
+          
+          
+          <span class="code" data-ice="name"><span><a href="class/src/WebChannelFacade.js~WebGroup.html#instance-member-state">state</a></span></span><span class="code" data-ice="signature">: <span><a href="class/src/WebChannelFacade.js~WebGroupState.html">WebGroupState</a></span></span>
+        </p>
+      </div>
+      <div>
+        
+        
+        <div data-ice="description"><p>The read-only state of the <span><a href="class/src/WebChannelFacade.js~WebGroup.html">WebGroup</a></span> connection.</p>
+</div>
+      </div>
+    </td>
+    <td>
+      
+      
+    </td>
+  </tr>
+<tr data-ice="target">
+    <td>
+      <span class="access" data-ice="access">public</span>
+      
+      
+      
+      <span class="override" data-ice="override"></span>
+    </td>
+    <td>
+      <div>
+        <p>
+          
+          
+          
+          <span class="code" data-ice="name"><span><a href="class/src/WebChannelFacade.js~WebGroup.html#instance-member-topology">topology</a></span></span><span class="code" data-ice="signature">: <span><a href="class/src/index.common.js~Topology.html">Topology</a></span></span>
+        </p>
+      </div>
+      <div>
+        
+        
+        <div data-ice="description"><p>The read-only property which is an enum of type <span><a href="class/src/index.common.js~Topology.html">Topology</a></span>
+indicating the topology used for this <span><a href="class/src/WebChannelFacade.js~WebGroup.html">WebGroup</a></span> instance.</p>
+</div>
+      </div>
+    </td>
+    <td>
+      
+      
+    </td>
+  </tr>
+</tbody>
+</table>
+</div>
+<div data-ice="methodSummary"><h2>Method Summary</h2><table class="summary" data-ice="summary">
+  <thead><tr><td data-ice="title" colspan="3">Public Methods</td></tr></thead>
+  <tbody>
+  
+  <tr data-ice="target">
+    <td>
+      <span class="access" data-ice="access">public</span>
+      
+      
+      
+      <span class="override" data-ice="override"></span>
+    </td>
+    <td>
+      <div>
+        <p>
+          
+          
+          
+          <span class="code" data-ice="name"><span><a href="class/src/WebChannelFacade.js~WebGroup.html#instance-method-invite">invite</a></span></span><span class="code" data-ice="signature">(url: <span>string</span>)</span>
+        </p>
+      </div>
+      <div>
+        
+        
+        <div data-ice="description"><p>Invite a bot server to join this group.</p>
+</div>
+      </div>
+    </td>
+    <td>
+      
+      
+    </td>
+  </tr>
+<tr data-ice="target">
+    <td>
+      <span class="access" data-ice="access">public</span>
+      
+      
+      
+      <span class="override" data-ice="override"></span>
+    </td>
+    <td>
+      <div>
+        <p>
+          
+          
+          
+          <span class="code" data-ice="name"><span><a href="class/src/WebChannelFacade.js~WebGroup.html#instance-method-join">join</a></span></span><span class="code" data-ice="signature">(key: <span>string</span>)</span>
+        </p>
+      </div>
+      <div>
+        
+        
+        <div data-ice="description"><p>Join the group identified by a key provided by one of the group member.</p>
+</div>
+      </div>
+    </td>
+    <td>
+      
+      
+    </td>
+  </tr>
+<tr data-ice="target">
+    <td>
+      <span class="access" data-ice="access">public</span>
+      
+      
+      
+      <span class="override" data-ice="override"></span>
+    </td>
+    <td>
+      <div>
+        <p>
+          
+          
+          
+          <span class="code" data-ice="name"><span><a href="class/src/WebChannelFacade.js~WebGroup.html#instance-method-leave">leave</a></span></span><span class="code" data-ice="signature">()</span>
+        </p>
+      </div>
+      <div>
+        
+        
+        <div data-ice="description"><p>Leave the group which means close channels with all members and connection
+with the Signaling server.</p>
+</div>
+      </div>
+    </td>
+    <td>
+      
+      
+    </td>
+  </tr>
+<tr data-ice="target">
+    <td>
+      <span class="access" data-ice="access">public</span>
+      
+      
+      
+      <span class="override" data-ice="override"></span>
+    </td>
+    <td>
+      <div>
+        <p>
+          
+          
+          
+          <span class="code" data-ice="name"><span><a href="class/src/WebChannelFacade.js~WebGroup.html#instance-method-send">send</a></span></span><span class="code" data-ice="signature">(data: <span><a href="typedef/index.html#static-typedef-DataType">DataType</a></span>)</span>
+        </p>
+      </div>
+      <div>
+        
+        
+        <div data-ice="description"><p>Broadcast a message to the group.</p>
+</div>
+      </div>
+    </td>
+    <td>
+      
+      
+    </td>
+  </tr>
+<tr data-ice="target">
+    <td>
+      <span class="access" data-ice="access">public</span>
+      
+      
+      
+      <span class="override" data-ice="override"></span>
+    </td>
+    <td>
+      <div>
+        <p>
+          
+          
+          
+          <span class="code" data-ice="name"><span><a href="class/src/WebChannelFacade.js~WebGroup.html#instance-method-sendTo">sendTo</a></span></span><span class="code" data-ice="signature">(id: <span>number</span>, data: <span><a href="typedef/index.html#static-typedef-DataType">DataType</a></span>)</span>
+        </p>
+      </div>
+      <div>
+        
+        
+        <div data-ice="description"><p>Send a message to a particular group member.</p>
+</div>
+      </div>
+    </td>
+    <td>
+      
+      
+    </td>
+  </tr>
+</tbody>
+</table>
+</div>
+
+
+
+
+
+<div data-ice="constructorDetails"><h2 data-ice="title">Public Constructors</h2>
+
+<div class="detail" data-ice="detail">
+  <h3 data-ice="anchor" id="instance-constructor-constructor">
+    <span class="access" data-ice="access">public</span>
+    
+    
+    
+    
+    
+    <span class="code" data-ice="name">constructor</span><span class="code" data-ice="signature">(options: <span><a href="typedef/index.html#static-typedef-WebGroupOptions">WebGroupOptions</a></span>)</span>
+    <span class="right-info">
+      
+      
+      <span data-ice="source"><span><a href="file/src/WebChannelFacade.js.html#lineNumber106">source</a></span></span>
+    </span>
+  </h3>
+
+  
+  
+  
+  
+
+  
+
+  <div data-ice="properties"><div data-ice="properties">
+  <h4 data-ice="title">Params:</h4>
+  <table class="params">
+    <thead>
+    <tr><td>Name</td><td>Type</td><td>Attribute</td><td>Description</td></tr>
+    </thead>
+    <tbody>
+    
+    <tr data-ice="property" data-depth="0">
+      <td data-ice="name" class="code" data-depth="0">options</td>
+      <td data-ice="type" class="code"><span><a href="typedef/index.html#static-typedef-WebGroupOptions">WebGroupOptions</a></span></td>
+      <td data-ice="appendix"><ul><li>optional</li></ul></td>
+      <td data-ice="description"></td>
+    </tr>
+<tr data-ice="property" data-depth="1">
+      <td data-ice="name" class="code" data-depth="1">options.topology</td>
+      <td data-ice="type" class="code"><span><a href="class/src/index.common.js~Topology.html">Topology</a></span></td>
+      <td data-ice="appendix"><ul><li>optional</li>
+<li>default: Topology.FULL_MESH</li></ul></td>
+      <td data-ice="description"></td>
+    </tr>
+<tr data-ice="property" data-depth="1">
+      <td data-ice="name" class="code" data-depth="1">options.signalingServer</td>
+      <td data-ice="type" class="code"><span>string</span></td>
+      <td data-ice="appendix"><ul><li>optional</li>
+<li>default: &apos;wss://signaling.netflux.coedit.re&apos;</li></ul></td>
+      <td data-ice="description"></td>
+    </tr>
+<tr data-ice="property" data-depth="1">
+      <td data-ice="name" class="code" data-depth="1">options.rtcConfiguration</td>
+      <td data-ice="type" class="code"><span><a href="https://developer.mozilla.org/en/docs/Web/API/RTCConfiguration">RTCConfiguration</a></span></td>
+      <td data-ice="appendix"><ul><li>optional</li>
+<li>default: {iceServers: [{urls: &apos;stun:stun3.l.google.com:19302&apos;}]}</li></ul></td>
+      <td data-ice="description"></td>
+    </tr>
+<tr data-ice="property" data-depth="1">
+      <td data-ice="name" class="code" data-depth="1">options.autoRejoin</td>
+      <td data-ice="type" class="code"><span>boolean</span></td>
+      <td data-ice="appendix"><ul><li>optional</li>
+<li>default: true</li></ul></td>
+      <td data-ice="description"></td>
+    </tr>
+</tbody>
+  </table>
+</div>
+</div>
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  <div data-ice="tests">
+    <h4>Test:</h4>
+    <ul>
+      
+    <li data-ice="test"><span><a href="test-file/test/functional/1member.test.js.html#lineNumber13">1 member &#x1F642; constructor</a></span></li>
+</ul>
+  </div>
+
+  
+  
+</div>
+</div>
+<div data-ice="memberDetails"><h2 data-ice="title">Public Members</h2>
+
+<div class="detail" data-ice="detail">
+  <h3 data-ice="anchor" id="instance-member-autoRejoin">
+    <span class="access" data-ice="access">public</span>
+    
+    
+    
+    
+    
+    <span class="code" data-ice="name">autoRejoin</span><span class="code" data-ice="signature">: <span>boolean</span></span>
+    <span class="right-info">
+      
+      
+      <span data-ice="source"><span><a href="file/src/WebChannelFacade.js.html#lineNumber171">source</a></span></span>
+    </span>
+  </h3>
+
+  
+  
+  
+  <div data-ice="description"><p>Enable/Desable the auto rejoin feature.</p>
+</div>
+
+  
+
+  <div data-ice="properties">
+</div>
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+</div>
+<div class="detail" data-ice="detail">
+  <h3 data-ice="anchor" id="instance-member-id">
+    <span class="access" data-ice="access">public</span>
+    
+    
+    
+    
+    
+    <span class="code" data-ice="name">id</span><span class="code" data-ice="signature">: <span>number</span></span>
+    <span class="right-info">
+      
+      
+      <span data-ice="source"><span><a href="file/src/WebChannelFacade.js.html#lineNumber113">source</a></span></span>
+    </span>
+  </h3>
+
+  
+  
+  
+  <div data-ice="description"><p>The read-only <span><a href="class/src/WebChannelFacade.js~WebGroup.html">WebGroup</a></span> identifier. The same value for all members.</p>
+</div>
+
+  
+
+  <div data-ice="properties">
+</div>
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+</div>
+<div class="detail" data-ice="detail">
+  <h3 data-ice="anchor" id="instance-member-key">
+    <span class="access" data-ice="access">public</span>
+    
+    
+    
+    
+    
+    <span class="code" data-ice="name">key</span><span class="code" data-ice="signature">: <span>string</span></span>
+    <span class="right-info">
+      
+      
+      <span data-ice="source"><span><a href="file/src/WebChannelFacade.js.html#lineNumber127">source</a></span></span>
+    </span>
+  </h3>
+
+  
+  
+  
+  <div data-ice="description"><p>The read-only group session identifier. Equals to an empty string before calling <span><a href="class/src/WebChannelFacade.js~WebGroup.html#instance-method-join">WebGroup#join</a></span>.
+Different to <span><a href="class/src/WebChannelFacade.js~WebGroup.html#instance-member-id">WebGroup#id</a></span>. This key is known and used by Signaling server
+in order to join new members, on the other hand Signaling does not know <span><a href="class/src/WebChannelFacade.js~WebGroup.html#instance-member-id">WebGroup#id</a></span>.</p>
+</div>
+
+  
+
+  <div data-ice="properties">
+</div>
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+</div>
+<div class="detail" data-ice="detail">
+  <h3 data-ice="anchor" id="instance-member-members">
+    <span class="access" data-ice="access">public</span>
+    
+    
+    
+    
+    
+    <span class="code" data-ice="name">members</span><span class="code" data-ice="signature">: <span><span>number</span><span>[]</span></span></span>
+    <span class="right-info">
+      
+      
+      <span data-ice="source"><span><a href="file/src/WebChannelFacade.js.html#lineNumber133">source</a></span></span>
+    </span>
+  </h3>
+
+  
+  
+  
+  <div data-ice="description"><p>The read-only array of all members including yourself (i.e. <span><a href="class/src/WebChannelFacade.js~WebGroup.html#instance-member-myId">WebGroup#myId</a></span>)</p>
+</div>
+
+  
+
+  <div data-ice="properties">
+</div>
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+</div>
+<div class="detail" data-ice="detail">
+  <h3 data-ice="anchor" id="instance-member-myId">
+    <span class="access" data-ice="access">public</span>
+    
+    
+    
+    
+    
+    <span class="code" data-ice="name">myId</span><span class="code" data-ice="signature">: <span>number</span></span>
+    <span class="right-info">
+      
+      
+      <span data-ice="source"><span><a href="file/src/WebChannelFacade.js.html#lineNumber119">source</a></span></span>
+    </span>
+  </h3>
+
+  
+  
+  
+  <div data-ice="description"><p>The read-only your unique member identifier in the group.</p>
+</div>
+
+  
+
+  <div data-ice="properties">
+</div>
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+</div>
+<div class="detail" data-ice="detail">
+  <h3 data-ice="anchor" id="instance-member-onMemberJoin">
+    <span class="access" data-ice="access">public</span>
+    
+    
+    
+    
+    
+    <span class="code" data-ice="name">onMemberJoin</span><span class="code" data-ice="signature">: <span><span>function</span><span>(id: <span>number</span>)</span></span></span>
+    <span class="right-info">
+      
+      
+      <span data-ice="source"><span><a href="file/src/WebChannelFacade.js.html#lineNumber202">source</a></span></span>
+    </span>
+  </h3>
+
+  
+  
+  
+  <div data-ice="description"><p>This handler is called when a new member with <code>id</code> as identifier has joined the group.</p>
+</div>
+
+  
+
+  <div data-ice="properties">
+</div>
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  <div data-ice="tests">
+    <h4>Test:</h4>
+    <ul>
+      
+    <li data-ice="test"><span><a href="test-file/test/functional/2members.test.js.html#lineNumber117">2 members &#x1F642; &#x1F642; joining should be notified about new member</a></span></li>
+<li data-ice="test"><span><a href="test-file/test/functional/2members.test.js.html#lineNumber592">2 members &#x1F642; &#x1F916; inviting should be notified about new member</a></span></li>
+<li data-ice="test"><span><a href="test-file/test/functional/3members.test.js.html#lineNumber147">3 members &#x1F642; &#x1F642; &#x1F642; joining should be notified about new member</a></span></li>
+<li data-ice="test"><span><a href="test-file/test/functional/1member.test.js.html#lineNumber125">1 member &#x1F642; joining should NOT be notified about new member</a></span></li>
+</ul>
+  </div>
+
+  
+  
+</div>
+<div class="detail" data-ice="detail">
+  <h3 data-ice="anchor" id="instance-member-onMemberLeave">
+    <span class="access" data-ice="access">public</span>
+    
+    
+    
+    
+    
+    <span class="code" data-ice="name">onMemberLeave</span><span class="code" data-ice="signature">: <span><span>function</span><span>(id: <span>number</span>)</span></span></span>
+    <span class="right-info">
+      
+      
+      <span data-ice="source"><span><a href="file/src/WebChannelFacade.js.html#lineNumber220">source</a></span></span>
+    </span>
+  </h3>
+
+  
+  
+  
+  <div data-ice="description"><p>This handler is called when a member with <code>id</code> as identifier hes left the group.</p>
+</div>
+
+  
+
+  <div data-ice="properties">
+</div>
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  <div data-ice="tests">
+    <h4>Test:</h4>
+    <ul>
+      
+    <li data-ice="test"><span><a href="test-file/test/functional/1member.test.js.html#lineNumber221">1 member &#x1F642; leaving should be NOT notified about left member</a></span></li>
+<li data-ice="test"><span><a href="test-file/test/functional/2members.test.js.html#lineNumber464">2 members &#x1F642; &#x1F642; leaving should be notified about left member</a></span></li>
+<li data-ice="test"><span><a href="test-file/test/functional/3members.test.js.html#lineNumber635">3 members &#x1F642; &#x1F642; &#x1F642; should be notified about left member</a></span></li>
+</ul>
+  </div>
+
+  
+  
+</div>
+<div class="detail" data-ice="detail">
+  <h3 data-ice="anchor" id="instance-member-onMessage">
+    <span class="access" data-ice="access">public</span>
+    
+    
+    
+    
+    
+    <span class="code" data-ice="name">onMessage</span><span class="code" data-ice="signature">: <span><span>function</span><span>(id: <span>number</span>, data: <span><a href="typedef/index.html#static-typedef-DataType">DataType</a></span>)</span></span></span>
+    <span class="right-info">
+      
+      
+      <span data-ice="source"><span><a href="file/src/WebChannelFacade.js.html#lineNumber184">source</a></span></span>
+    </span>
+  </h3>
+
+  
+  
+  
+  <div data-ice="description"><p>This handler is called when a message has been received from the group.
+<code>id</code> is an identifier of the member who sent this message.
+and false if sent via <span><a href="class/src/WebChannelFacade.js~WebGroup.html#instance-method-sendTo">WebGroup#sendTo</a></span>.</p>
+</div>
+
+  
+
+  <div data-ice="properties">
+</div>
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+</div>
+<div class="detail" data-ice="detail">
+  <h3 data-ice="anchor" id="instance-member-onSignalingStateChange">
+    <span class="access" data-ice="access">public</span>
+    
+    
+    
+    
+    
+    <span class="code" data-ice="name">onSignalingStateChange</span><span class="code" data-ice="signature">: <span><span>function</span><span>(state: <span><a href="class/src/index.common.js~SignalingState.html">SignalingState</a></span>)</span></span></span>
+    <span class="right-info">
+      
+      
+      <span data-ice="source"><span><a href="file/src/WebChannelFacade.js.html#lineNumber256">source</a></span></span>
+    </span>
+  </h3>
+
+  
+  
+  
+  <div data-ice="description"><p>This handler is called when the signaling state has changed.</p>
+</div>
+
+  
+
+  <div data-ice="properties">
+</div>
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  <div data-ice="tests">
+    <h4>Test:</h4>
+    <ul>
+      
+    <li data-ice="test"><span><a href="test-file/test/functional/1member.test.js.html#lineNumber258">1 member &#x1F642; leaving should change the Signaling state</a></span></li>
+<li data-ice="test"><span><a href="test-file/test/functional/2members.test.js.html#lineNumber69">2 members &#x1F642; &#x1F642; joining should change the Signaling state</a></span></li>
+<li data-ice="test"><span><a href="test-file/test/functional/2members.test.js.html#lineNumber508">2 members &#x1F642; &#x1F642; leaving should change the Signaling state</a></span></li>
+<li data-ice="test"><span><a href="test-file/test/functional/2members.test.js.html#lineNumber550">2 members &#x1F642; &#x1F916; inviting should not change the Signaling state</a></span></li>
+<li data-ice="test"><span><a href="test-file/test/functional/1member.test.js.html#lineNumber85">1 member &#x1F642; joining should change the Signaling state</a></span></li>
+<li data-ice="test"><span><a href="test-file/test/functional/3members.test.js.html#lineNumber95">3 members &#x1F642; &#x1F642; &#x1F642; joining should change the Signaling state</a></span></li>
+<li data-ice="test"><span><a href="test-file/test/functional/3members.test.js.html#lineNumber677">3 members &#x1F642; &#x1F642; &#x1F642; should change the Signaling state</a></span></li>
+</ul>
+  </div>
+
+  
+  
+</div>
+<div class="detail" data-ice="detail">
+  <h3 data-ice="anchor" id="instance-member-onStateChange">
+    <span class="access" data-ice="access">public</span>
+    
+    
+    
+    
+    
+    <span class="code" data-ice="name">onStateChange</span><span class="code" data-ice="signature">: <span><span>function</span><span>(state: <span><a href="class/src/WebChannelFacade.js~WebGroupState.html">WebGroupState</a></span>)</span></span></span>
+    <span class="right-info">
+      
+      
+      <span data-ice="source"><span><a href="file/src/WebChannelFacade.js.html#lineNumber238">source</a></span></span>
+    </span>
+  </h3>
+
+  
+  
+  
+  <div data-ice="description"><p>This handler is called when the group state has changed.</p>
+</div>
+
+  
+
+  <div data-ice="properties">
+</div>
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  <div data-ice="tests">
+    <h4>Test:</h4>
+    <ul>
+      
+    <li data-ice="test"><span><a href="test-file/test/functional/1member.test.js.html#lineNumber237">1 member &#x1F642; leaving should change the WebGroup state</a></span></li>
+<li data-ice="test"><span><a href="test-file/test/functional/2members.test.js.html#lineNumber93">2 members &#x1F642; &#x1F642; joining should change the WebGroup state</a></span></li>
+<li data-ice="test"><span><a href="test-file/test/functional/2members.test.js.html#lineNumber489">2 members &#x1F642; &#x1F642; leaving should change the WebGroup state</a></span></li>
+<li data-ice="test"><span><a href="test-file/test/functional/2members.test.js.html#lineNumber571">2 members &#x1F642; &#x1F916; inviting should change the WebGroup state</a></span></li>
+<li data-ice="test"><span><a href="test-file/test/functional/3members.test.js.html#lineNumber121">3 members &#x1F642; &#x1F642; &#x1F642; joining should change the WebGroup state</a></span></li>
+<li data-ice="test"><span><a href="test-file/test/functional/1member.test.js.html#lineNumber105">1 member &#x1F642; joining should change the WebGroup state</a></span></li>
+<li data-ice="test"><span><a href="test-file/test/functional/3members.test.js.html#lineNumber661">3 members &#x1F642; &#x1F642; &#x1F642; should change the WebGroup state</a></span></li>
+</ul>
+  </div>
+
+  
+  
+</div>
+<div class="detail" data-ice="detail">
+  <h3 data-ice="anchor" id="instance-member-signalingServer">
+    <span class="access" data-ice="access">public</span>
+    
+    
+    
+    
+    
+    <span class="code" data-ice="name">signalingServer</span><span class="code" data-ice="signature">: <span>string</span></span>
+    <span class="right-info">
+      
+      
+      <span data-ice="source"><span><a href="file/src/WebChannelFacade.js.html#lineNumber162">source</a></span></span>
+    </span>
+  </h3>
+
+  
+  
+  
+  <div data-ice="description"><p>The read-only signaling server URL.</p>
+</div>
+
+  
+
+  <div data-ice="properties">
+</div>
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+</div>
+<div class="detail" data-ice="detail">
+  <h3 data-ice="anchor" id="instance-member-signalingState">
+    <span class="access" data-ice="access">public</span>
+    
+    
+    
+    
+    
+    <span class="code" data-ice="name">signalingState</span><span class="code" data-ice="signature">: <span><a href="class/src/index.common.js~SignalingState.html">SignalingState</a></span></span>
+    <span class="right-info">
+      
+      
+      <span data-ice="source"><span><a href="file/src/WebChannelFacade.js.html#lineNumber152">source</a></span></span>
+    </span>
+  </h3>
+
+  
+  
+  
+  <div data-ice="description"><p>The read-only state of the signaling server.</p>
+</div>
+
+  
+
+  <div data-ice="properties">
+</div>
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+</div>
+<div class="detail" data-ice="detail">
+  <h3 data-ice="anchor" id="instance-member-state">
+    <span class="access" data-ice="access">public</span>
+    
+    
+    
+    
+    
+    <span class="code" data-ice="name">state</span><span class="code" data-ice="signature">: <span><a href="class/src/WebChannelFacade.js~WebGroupState.html">WebGroupState</a></span></span>
+    <span class="right-info">
+      
+      
+      <span data-ice="source"><span><a href="file/src/WebChannelFacade.js.html#lineNumber146">source</a></span></span>
+    </span>
+  </h3>
+
+  
+  
+  
+  <div data-ice="description"><p>The read-only state of the <span><a href="class/src/WebChannelFacade.js~WebGroup.html">WebGroup</a></span> connection.</p>
+</div>
+
+  
+
+  <div data-ice="properties">
+</div>
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+</div>
+<div class="detail" data-ice="detail">
+  <h3 data-ice="anchor" id="instance-member-topology">
+    <span class="access" data-ice="access">public</span>
+    
+    
+    
+    
+    
+    <span class="code" data-ice="name">topology</span><span class="code" data-ice="signature">: <span><a href="class/src/index.common.js~Topology.html">Topology</a></span></span>
+    <span class="right-info">
+      
+      
+      <span data-ice="source"><span><a href="file/src/WebChannelFacade.js.html#lineNumber140">source</a></span></span>
+    </span>
+  </h3>
+
+  
+  
+  
+  <div data-ice="description"><p>The read-only property which is an enum of type <span><a href="class/src/index.common.js~Topology.html">Topology</a></span>
+indicating the topology used for this <span><a href="class/src/WebChannelFacade.js~WebGroup.html">WebGroup</a></span> instance.</p>
+</div>
+
+  
+
+  <div data-ice="properties">
+</div>
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+</div>
+</div>
+<div data-ice="methodDetails"><h2 data-ice="title">Public Methods</h2>
+
+<div class="detail" data-ice="detail">
+  <h3 data-ice="anchor" id="instance-method-invite">
+    <span class="access" data-ice="access">public</span>
+    
+    
+    
+    
+    
+    <span class="code" data-ice="name">invite</span><span class="code" data-ice="signature">(url: <span>string</span>)</span>
+    <span class="right-info">
+      
+      
+      <span data-ice="source"><span><a href="file/src/WebChannelFacade.js.html#lineNumber289">source</a></span></span>
+    </span>
+  </h3>
+
+  
+  
+  
+  <div data-ice="description"><p>Invite a bot server to join this group.</p>
+</div>
+
+  
+
+  <div data-ice="properties"><div data-ice="properties">
+  <h4 data-ice="title">Params:</h4>
+  <table class="params">
+    <thead>
+    <tr><td>Name</td><td>Type</td><td>Attribute</td><td>Description</td></tr>
+    </thead>
+    <tbody>
+    
+    <tr data-ice="property" data-depth="0">
+      <td data-ice="name" class="code" data-depth="0">url</td>
+      <td data-ice="type" class="code"><span>string</span></td>
+      <td data-ice="appendix"></td>
+      <td data-ice="description"><p>Bot server URL (See <span><a href="typedef/index.html#static-typedef-WebGroupBotServerOptions">WebGroupBotServerOptions</a></span>)</p>
+</td>
+    </tr>
+</tbody>
+  </table>
+</div>
+</div>
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  <div data-ice="tests">
+    <h4>Test:</h4>
+    <ul>
+      
+    <li data-ice="test"><span><a href="test-file/test/functional/2members.test.js.html#lineNumber531">2 members &#x1F642; &#x1F916; inviting</a></span></li>
+</ul>
+  </div>
+
+  
+  
+</div>
+<div class="detail" data-ice="detail">
+  <h3 data-ice="anchor" id="instance-method-join">
+    <span class="access" data-ice="access">public</span>
+    
+    
+    
+    
+    
+    <span class="code" data-ice="name">join</span><span class="code" data-ice="signature">(key: <span>string</span>)</span>
+    <span class="right-info">
+      
+      
+      <span data-ice="source"><span><a href="file/src/WebChannelFacade.js.html#lineNumber278">source</a></span></span>
+    </span>
+  </h3>
+
+  
+  
+  
+  <div data-ice="description"><p>Join the group identified by a key provided by one of the group member.
+If the current <span><a href="class/src/WebChannelFacade.js~WebGroup.html#instance-member-state">WebGroup#state</a></span> value is not <span>WebGroupState#LEFT</span> or
+<span><a href="class/src/WebChannelFacade.js~WebGroup.html#instance-member-signalingState">WebGroup#signalingState</a></span> value is not <span><a href="class/src/index.common.js~SignalingState.html#static-get-CLOSED">SignalingState.CLOSED</a></span>,
+then do nothing.</p>
+</div>
+
+  
+
+  <div data-ice="properties"><div data-ice="properties">
+  <h4 data-ice="title">Params:</h4>
+  <table class="params">
+    <thead>
+    <tr><td>Name</td><td>Type</td><td>Attribute</td><td>Description</td></tr>
+    </thead>
+    <tbody>
+    
+    <tr data-ice="property" data-depth="0">
+      <td data-ice="name" class="code" data-depth="0">key</td>
+      <td data-ice="type" class="code"><span>string</span></td>
+      <td data-ice="appendix"><ul><li>optional</li></ul></td>
+      <td data-ice="description"><p>Will be generated if not provided</p>
+</td>
+    </tr>
+</tbody>
+  </table>
+</div>
+</div>
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  <div data-ice="tests">
+    <h4>Test:</h4>
+    <ul>
+      
+    <li data-ice="test"><span><a href="test-file/test/functional/2members.test.js.html#lineNumber14">2 members &#x1F642; &#x1F642; joining</a></span></li>
+<li data-ice="test"><span><a href="test-file/test/functional/1member.test.js.html#lineNumber65">1 member &#x1F642; joining</a></span></li>
+<li data-ice="test"><span><a href="test-file/test/functional/3members.test.js.html#lineNumber15">3 members &#x1F642; &#x1F642; &#x1F642; joining</a></span></li>
+<li data-ice="test"><span><a href="test-file/test/functional/2members.test.js.html#lineNumber178">2 members &#x1F642; &#x1F642; joining should join with the specified key</a></span></li>
+<li data-ice="test"><span><a href="test-file/test/functional/1member.test.js.html#lineNumber167">1 member &#x1F642; joining should join with the specified key</a></span></li>
+</ul>
+  </div>
+
+  
+  
+</div>
+<div class="detail" data-ice="detail">
+  <h3 data-ice="anchor" id="instance-method-leave">
+    <span class="access" data-ice="access">public</span>
+    
+    
+    
+    
+    
+    <span class="code" data-ice="name">leave</span><span class="code" data-ice="signature">()</span>
+    <span class="right-info">
+      
+      
+      <span data-ice="source"><span><a href="file/src/WebChannelFacade.js.html#lineNumber300">source</a></span></span>
+    </span>
+  </h3>
+
+  
+  
+  
+  <div data-ice="description"><p>Leave the group which means close channels with all members and connection
+with the Signaling server.</p>
+</div>
+
+  
+
+  <div data-ice="properties">
+</div>
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  <div data-ice="tests">
+    <h4>Test:</h4>
+    <ul>
+      
+    <li data-ice="test"><span><a href="test-file/test/functional/1member.test.js.html#lineNumber194">1 member &#x1F642; leaving should have the same members, WebGroup id, topology and an empty key</a></span></li>
+<li data-ice="test"><span><a href="test-file/test/functional/2members.test.js.html#lineNumber430">2 members &#x1F642; &#x1F642; leaving should have no members &amp; an empty key</a></span></li>
+<li data-ice="test"><span><a href="test-file/test/functional/3members.test.js.html#lineNumber602">3 members &#x1F642; &#x1F642; &#x1F642; should have no members &amp; an empty key</a></span></li>
+</ul>
+  </div>
+
+  
+  
+</div>
+<div class="detail" data-ice="detail">
+  <h3 data-ice="anchor" id="instance-method-send">
+    <span class="access" data-ice="access">public</span>
+    
+    
+    
+    
+    
+    <span class="code" data-ice="name">send</span><span class="code" data-ice="signature">(data: <span><a href="typedef/index.html#static-typedef-DataType">DataType</a></span>)</span>
+    <span class="right-info">
+      
+      
+      <span data-ice="source"><span><a href="file/src/WebChannelFacade.js.html#lineNumber311">source</a></span></span>
+    </span>
+  </h3>
+
+  
+  
+  
+  <div data-ice="description"><p>Broadcast a message to the group.</p>
+</div>
+
+  
+
+  <div data-ice="properties"><div data-ice="properties">
+  <h4 data-ice="title">Params:</h4>
+  <table class="params">
+    <thead>
+    <tr><td>Name</td><td>Type</td><td>Attribute</td><td>Description</td></tr>
+    </thead>
+    <tbody>
+    
+    <tr data-ice="property" data-depth="0">
+      <td data-ice="name" class="code" data-depth="0">data</td>
+      <td data-ice="type" class="code"><span><a href="typedef/index.html#static-typedef-DataType">DataType</a></span></td>
+      <td data-ice="appendix"></td>
+      <td data-ice="description"></td>
+    </tr>
+</tbody>
+  </table>
+</div>
+</div>
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  <div data-ice="tests">
+    <h4>Test:</h4>
+    <ul>
+      
+    <li data-ice="test"><span><a href="test-file/test/functional/2members.test.js.html#lineNumber266">2 members &#x1F642; &#x1F642; should send/receive broadcast String</a></span></li>
+<li data-ice="test"><span><a href="test-file/test/functional/2members.test.js.html#lineNumber291">2 members &#x1F642; &#x1F642; should send/receive broadcast ArrayBuffer</a></span></li>
+<li data-ice="test"><span><a href="test-file/test/functional/2members.test.js.html#lineNumber688">2 members &#x1F642; &#x1F916; should send/receive broadcast String</a></span></li>
+<li data-ice="test"><span><a href="test-file/test/functional/2members.test.js.html#lineNumber712">2 members &#x1F642; &#x1F916; should send/receive broadcast ArrayBuffer</a></span></li>
+<li data-ice="test"><span><a href="test-file/test/functional/3members.test.js.html#lineNumber307">3 members &#x1F642; &#x1F642; &#x1F642; should send/receive broadcast String</a></span></li>
+<li data-ice="test"><span><a href="test-file/test/functional/3members.test.js.html#lineNumber356">3 members &#x1F642; &#x1F642; &#x1F642; should send/receive broadcast ArrayBuffer</a></span></li>
+</ul>
+  </div>
+
+  
+  
+</div>
+<div class="detail" data-ice="detail">
+  <h3 data-ice="anchor" id="instance-method-sendTo">
+    <span class="access" data-ice="access">public</span>
+    
+    
+    
+    
+    
+    <span class="code" data-ice="name">sendTo</span><span class="code" data-ice="signature">(id: <span>number</span>, data: <span><a href="typedef/index.html#static-typedef-DataType">DataType</a></span>)</span>
+    <span class="right-info">
+      
+      
+      <span data-ice="source"><span><a href="file/src/WebChannelFacade.js.html#lineNumber323">source</a></span></span>
+    </span>
+  </h3>
+
+  
+  
+  
+  <div data-ice="description"><p>Send a message to a particular group member.</p>
+</div>
+
+  
+
+  <div data-ice="properties"><div data-ice="properties">
+  <h4 data-ice="title">Params:</h4>
+  <table class="params">
+    <thead>
+    <tr><td>Name</td><td>Type</td><td>Attribute</td><td>Description</td></tr>
+    </thead>
+    <tbody>
+    
+    <tr data-ice="property" data-depth="0">
+      <td data-ice="name" class="code" data-depth="0">id</td>
+      <td data-ice="type" class="code"><span>number</span></td>
+      <td data-ice="appendix"></td>
+      <td data-ice="description"><p>Member identifier</p>
+</td>
+    </tr>
+<tr data-ice="property" data-depth="0">
+      <td data-ice="name" class="code" data-depth="0">data</td>
+      <td data-ice="type" class="code"><span><a href="typedef/index.html#static-typedef-DataType">DataType</a></span></td>
+      <td data-ice="appendix"></td>
+      <td data-ice="description"><p>Message</p>
+</td>
+    </tr>
+</tbody>
+  </table>
+</div>
+</div>
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  <div data-ice="tests">
+    <h4>Test:</h4>
+    <ul>
+      
+    <li data-ice="test"><span><a href="test-file/test/functional/2members.test.js.html#lineNumber318">2 members &#x1F642; &#x1F642; should send/receive private String</a></span></li>
+<li data-ice="test"><span><a href="test-file/test/functional/2members.test.js.html#lineNumber343">2 members &#x1F642; &#x1F642; should send/receive private ArrayBuffer</a></span></li>
+<li data-ice="test"><span><a href="test-file/test/functional/2members.test.js.html#lineNumber736">2 members &#x1F642; &#x1F916; should send/receive private String</a></span></li>
+<li data-ice="test"><span><a href="test-file/test/functional/2members.test.js.html#lineNumber760">2 members &#x1F642; &#x1F916; should send/receive private ArrayBuffer</a></span></li>
+<li data-ice="test"><span><a href="test-file/test/functional/3members.test.js.html#lineNumber408">3 members &#x1F642; &#x1F642; &#x1F642; should send/receive private String</a></span></li>
+<li data-ice="test"><span><a href="test-file/test/functional/3members.test.js.html#lineNumber463">3 members &#x1F642; &#x1F642; &#x1F642; should send/receive private ArrayBuffer</a></span></li>
+</ul>
+  </div>
+
+  
+  
+</div>
+</div>
+</div>
+
+<footer class="footer">
+  Generated by <a href="https://esdoc.org">ESDoc<span data-ice="esdocVersion">(1.0.4)</span><img src="./image/esdoc-logo-mini-black.png"></a>
+</footer>
+
+<script src="script/search_index.js"></script>
+<script src="script/search.js"></script>
+<script src="script/pretty-print.js"></script>
+<script src="script/inherited-summary.js"></script>
+<script src="script/test-summary.js"></script>
+<script src="script/inner-link.js"></script>
+<script src="script/patch-for-local.js"></script>
+</body>
+</html>

@@ -1,0 +1,15 @@
+syntax = "proto3";
+package fullMesh;
+
+message Message {
+  oneof type {
+    Peers membersResponse = 1;
+    bool membersRequest = 2;
+    Peers adjacentMembers = 3;
+    bool heartbeat = 5;
+  }
+}
+
+message Peers {
+  repeated uint32 ids = 1;
+}

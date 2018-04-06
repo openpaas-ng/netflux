@@ -14,70 +14,56 @@ module.exports = (config) => {
 
     // frameworks to use
     // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
-    frameworks: ['jasmine'],
+    frameworks: ['jasmine', 'karma-typescript'],
 
     // list of files / patterns to load in the browser
     files: [
-      'node_modules/webrtc-adapter/out/adapter_no_edge_no_global.js',
-      'test/unit/**/*.test.js',
-      'test/functional/fullyConnected/1peer.test.js',
-      'test/functional/fullyConnected/2peers/2humans.test.js',
-      // 'test/functional/fullyConnected/2peers/humanBot.test.js',
-      'test/functional/fullyConnected/3peers/*.test.js',
-      'test/functional/fullyConnected/manyPeers.test.js'
+      'src/**/*.ts',
+      'src/proto/index.js',
+      'test/util/helper.ts',
+      'test/functional/1member.test.ts',
+      'test/functional/2members.test.ts',
+      'test/functional/3members.test.ts',
+      // 'test/functional/manyMembers.test.ts'
     ],
 
     // list of files to exclude
-    exclude: [],
+    exclude: ['**/*.node.ts', '**/*BotServer*'],
 
     // preprocess matching files before serving them to the browser
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
     preprocessors: {
-      'test/**/*.test.js': ['rollup']
+      'test/**/*.ts': ['karma-typescript', 'regex'],
+      'src/**/*.+(js|ts)': ['karma-typescript', 'regex']
     },
 
-    rollupPreprocessor: {
-      plugins: [
-        require('rollup-plugin-string')({
-          include: 'test/**/*.txt'
-        }),
-        require('rollup-plugin-includepaths')({
-          paths: ['', 'src/', 'test/', 'dist/'],
-          extensions: ['.js', '.txt']
-        }),
-        require('rollup-plugin-commonjs')({
-          extensions: [ '.js' ],
-          sourceMap: false,
-          ignoreGlobal: false
-        }),
-        require('rollup-plugin-replace')({
-          WEB_RTC_MODULE: `window`,
-          WEB_SOCKET_MODULE: `window.WebSocket`,
-          TEXT_ENCODING_MODULE: `window`,
-          EVENT_SOURCE_MODULE: `window.EventSource`,
-          FETCH_MODULE: `window.fetch`
-        })
-      ],
-      format: 'iife'
+    karmaTypescriptConfig: {
+      compilerOptions: {
+        lib: [ "es2017", "dom" ],
+        moduleResolution: 'node',
+        downlevelIteration: true,
+        types: ['node', 'text-encoding'],
+        allowJs: true
+      },
+      bundlerOptions: {
+        exclude: ['wrtc', 'text-encoding', 'uws', 'url'],
+        addNodeGlobals: false,
+      },
+      include: ['src/**/*', 'test/**/*'],
+      coverageOptions: {
+        exclude: [/src\/proto\/index\.js/i, /test\/.*/i, /.*polyfills*/i]
+      },
+      exclude: ['**/*adapter_factory.js'],
+      reports: {
+        html: {},
+        'text-summary': ''
+      }
     },
 
     // test results reporter to use
     // possible values: 'dots', 'progress'
     // available reporters: https://npmjs.org/browse/keyword/karma-reporter
-    reporters: ['spec'],
-
-    specReporter: {
-      showSpecTiming: true
-    },
-
-    coverageReporter: {
-      dir: 'coverage',
-      reporters: [
-        {type: 'html'},
-        {type: 'text-summary'},
-        {type: 'lcovonly', subdir: '.'}
-      ]
-    },
+    reporters: ['spec', 'karma-typescript'],
 
     // web server port
     port: 9876,
@@ -98,6 +84,13 @@ module.exports = (config) => {
     // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
     browsers: ['Chrome', 'Firefox'],
 
+    customLaunchers: {
+      FirefoxHeadless: {
+        base: 'Firefox',
+        flags: [ '-headless' ],
+      },
+    },
+
     // Continuous Integration mode
     // if true, Karma captures browsers, runs the tests and exits
     singleRun: false,
@@ -110,75 +103,33 @@ module.exports = (config) => {
   })
 
   if (process.env.TRAVIS || TYPE === 'travis') {
-    Object.assign(config, {
-      browsers: ['Chrome_travis_ci'],
-
-      customLaunchers: {
-        Chrome_travis_ci: {
-          base: 'Chrome',
-          flags: ['--no-sandbox']
+    config.browsers = ['ChromeHeadless'],
+    config.autoWatch = false,
+    config.singleRun = true,
+    config.browserNoActivityTimeout = 120000
+    config.karmaTypescriptConfig.reports = {
+      lcovonly: {
+        subdirectory: 'lcov',
+        filename: 'lcov'
+      },
+      'text-summary': ''
+    }
+  } else if (TYPE === 'debug') {
+    config.autoWatch = true,
+    config.singleRun = false,
+    config.regexPreprocessor = {
+      rules: [
+        {
+          fileName: 'Util.ts', replacement: [
+            { replace: /enableLog\(false\)/g, with: 'enableLog(true)' }
+          ]
         }
-      },
-
-      coverageReporter: {
-        reporters: [
-          {type: 'text'},
-          {type: 'lcovonly', subdir: '.'}
-        ]
-      },
-      autoWatch: false,
-      singleRun: true,
-      browserNoActivityTimeout: 120000
-    })
-  } else if (TYPE === 'coverage') {
-    Object.assign(config, {
-      rollupPreprocessor: {
-        plugins: [
-          require('rollup-plugin-string')({
-            include: 'test/**/*.txt'
-          }),
-          require('rollup-plugin-includepaths')({
-            paths: ['', 'src/', 'test/'],
-            extensions: ['.js', '.txt']
-          }),
-          require('rollup-plugin-commonjs')({
-            extensions: [ '.js' ],
-            sourceMap: false,
-            ignoreGlobal: false
-          }),
-          require('rollup-plugin-istanbul')({
-            exclude: [
-              'test/**/*.js',
-              'test/*.js',
-              'test/*.txt',
-              'dist/*.js'
-            ]
-          }),
-          require('rollup-plugin-replace')({
-            WEB_RTC_MODULE: `window`,
-            WEB_SOCKET_MODULE: `window.WebSocket`,
-            TEXT_ENCODING_MODULE: `window`,
-            EVENT_SOURCE_MODULE: `window.EventSource`,
-            FETCH_MODULE: `window.fetch`
-          })
-        ],
-        format: 'iife'
-      },
-
-      reporters: ['spec', 'coverage'],
-
-      coverageReporter: {
-        dir: 'coverage',
-        reporters: [
-          {type: 'html'},
-          {type: 'text'},
-          {type: 'lcovonly', subdir: '.'}
-        ]
-      },
-
-      autoWatch: false,
-
-      singleRun: true
-    })
+      ]
+    }
+  } else if (TYPE === 'precommit') {
+    config.browsers = ['ChromeHeadless', 'Firefox'],
+    config.autoWatch = false,
+    config.singleRun = true,
+    config.karmaTypescriptConfig.reports = { 'text-summary': '' }
   }
 }

@@ -3,12 +3,14 @@ npm-debug*
 
 # Rollup output folders
 .rolledup*
+.botServer.js
 
 # Code coverage
 coverage
 
-# Documentation
-esdoc
+# Other
+.rpt2_cache
+.vscode
 
-# webrtc-adapter
-webrtc-adapter.js
+# Dist
+dist

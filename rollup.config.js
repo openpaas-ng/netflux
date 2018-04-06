@@ -1,124 +1,35 @@
-const replace = require('rollup-plugin-replace')
-const rollup = require('rollup')
-const filesize = require('rollup-plugin-filesize')
-const includePaths = require('rollup-plugin-includepaths')
-const babel = require('rollup-plugin-babel')
-const commonjs = require('rollup-plugin-commonjs')
+import filesize from 'rollup-plugin-filesize'
+import commonjs from 'rollup-plugin-commonjs'
+import resolve from 'rollup-plugin-node-resolve'
+import typescript from 'rollup-plugin-typescript2'
 
-// netflux.es5.umd.js
-rollup.rollup({
-  entry: 'src/index.node.js',
-  plugins: [
-    filesize({
-      format: {
-        round: 0
-      }
-    }),
-    includePaths({
-      paths: ['', 'src/'],
-      extensions: ['.js']
-    }),
-    commonjs({
-      extensions: [ '.js' ],
-      sourceMap: false,
-      ignoreGlobal: false
-    }),
-    replace({
-      WEB_RTC_MODULE: `Util.isBrowser() ? window : require('wrtc')`,
-      WEB_SOCKET_MODULE: `Util.isBrowser() ? window.WebSocket : require('ws')`,
-      TEXT_ENCODING_MODULE: `Util.isBrowser() ? window : require('text-encoding')`,
-      EVENT_SOURCE_MODULE: `Util.isBrowser() ? window.EventSource : require('eventsource')`,
-      FETCH_MODULE: `Util.isBrowser() ? window.fetch : require('node-fetch')`
-    }),
-    babel({
-      exclude: 'node_modules/**'
-    })
-  ]
-}).then((bundle) => {
-  console.log('ES5 code, UMD, for Browser & NodeJS')
-  bundle.write({
-    format: 'umd',
-    moduleName: 'netflux',
-    dest: 'dist/netflux.es5.umd.js'
-  })
-}).catch(err => {
-  console.log('Rollup error: ' + err.message)
-})
+const tsConfig =  { include: ['src/**/*.ts'] }
+const commonjsConfig = {
+  namedExports: {
+    'node_modules/protobufjs/minimal.js': [ 'Reader', 'Writer', 'util', 'roots' ]
+  }
+}
+const filesizeConfig = { format: { round: 0 } }
 
-// netflux.es5.module.browser.js
-rollup.rollup({
-  entry: 'src/index.browser.js',
-  plugins: [
-    filesize({
-      format: {
-        round: 0
-      }
-    }),
-    includePaths({
-      paths: ['', 'src/'],
-      extensions: ['.js']
-    }),
-    commonjs({
-      extensions: [ '.js' ],
-      sourceMap: false,
-      ignoreGlobal: false
-    }),
-    replace({
-      WEB_RTC_MODULE: `window`,
-      WEB_SOCKET_MODULE: `window.WebSocket`,
-      TEXT_ENCODING_MODULE: `window`,
-      EVENT_SOURCE_MODULE: `window.EventSource`,
-      FETCH_MODULE: `window.fetch`
-    }),
-    babel({
-      exclude: 'node_modules/**'
-    })
-  ]
-}).then((bundle) => {
-  console.log('ES5 code, ES module, for Browser')
-  bundle.write({
-    format: 'es',
-    dest: 'dist/netflux.es5.module.browser.js'
-  })
-}).catch(err => {
-  console.log('Rollup error: ' + err.message)
-})
-
-// netflux.es5.module.node.js
-rollup.rollup({
-  entry: 'src/index.node.js',
-  plugins: [
-    filesize({
-      format: {
-        round: 0
-      }
-    }),
-    includePaths({
-      paths: ['', 'src/'],
-      extensions: ['.js']
-    }),
-    commonjs({
-      extensions: [ '.js' ],
-      sourceMap: false,
-      ignoreGlobal: false
-    }),
-    replace({
-      WEB_RTC_MODULE: `require('wrtc')`,
-      WEB_SOCKET_MODULE: `require('uws')`,
-      TEXT_ENCODING_MODULE: `require('text-encoding')`,
-      EVENT_SOURCE_MODULE: `require('eventsource')`,
-      FETCH_MODULE: `require('node-fetch')`
-    }),
-    babel({
-      exclude: 'node_modules/**'
-    })
-  ]
-}).then((bundle) => {
-  console.log('ES5 code, ES module for NodeJS')
-  bundle.write({
-    format: 'es',
-    dest: 'dist/netflux.es5.module.node.js'
-  })
-}).catch(err => {
-  console.log('Rollup error: ' + err.message)
-})
+export default [
+  {
+    input: 'src/index.node.ts',
+    output: [{ file: 'dist/netflux.cjs.js', format: 'cjs', sourcemap: true }],
+    plugins: [
+      typescript(tsConfig),
+      resolve(),
+      commonjs(commonjsConfig),
+      filesize(filesizeConfig)
+    ]
+  },
+  {
+    input: 'src/index.browser.ts',
+    output: { file: 'dist/netflux.umd.js', format: 'umd', name: 'netflux', sourcemap: true },
+    plugins: [
+      typescript(tsConfig),
+      resolve(),
+      commonjs(commonjsConfig),
+      filesize(filesizeConfig)
+    ]
+  }
+]

@@ -1,49 +1,114 @@
 # Usage
-There are 3 builds in `dist` folder. Thus the `package.json` contains the following fields:
+
+There are 4 builds (all ES5 code):
+
+- `dist/netflux.cjs.js` CommonJS format for NodeJS.
+- `dist/esm/netflux.node.js` ECMAScript 6 module format for NodeJS.
+- `dist/esm/netflux.browser.js` ECMAScript 6 module format for browsers.
+- `dist/netflux.umd.js` UMD format for browsers.
+
+The `package.json` contains the following fields:
+
 ```json
 ...
-"main": "dist/netflux.es5.umd.js",
-"module": "dist/netflux.es5.module.node.js",
-"browser": "dist/netflux.es5.module.browser.js",
+"main": "dist/netflux.cjs.js",
+"module": "dist/esm/index.node.js",
+"browser": "dist/esm/index.browser.js",
 ...
 ```
 
-* **netflux.es5.module.browser.js** - ES5 code, ES module, build for Browser
-* **netflux.es5.module.node.js** - ES5 code, ES module, build for NodeJS
-* **netflux.es5.umd.js** - ES5 code, UMD module, build for Browser & NodeJS
+All builds are either for NodeJS or for Browser environment.
 
+**For browser environment** exported members are:
 
-The first two files are suitable for tools like Webpack or Browserify (as they understand `module` and `browser` properties). The difference between them is that for Browser there is no reference of `require` function and in the build for NodeJS there is no reference of `window` global variable.
+- `WebGroup` class
+- `WebGroupState` enum
+- `SignalingState` enum
+- `Topology` enum
+- `DataType` type
+- `WebGroupOption` type
 
-The third file is and UMD build (both `require` and `window` are preserved and the choice is made on Run Time). Can be consumed directly by Browser, NodeJS or a building tool.
+**For NodeJS environment** exported members are the same as for browser plus:
+
+- `WebGroupBotServer` class
+- `WebGroupBotServerOptions` type.
+
+## CommonJS
+
+`dist/netflux.cjs.js` - CommonJS format, built for NodeJS.
+
+```Javascript
+// NodeJS
+const netflux = require('netflux')
+var wg = new netflux.WebGroup()
+```
 
 ## ES module
-```
-dist/netflux.es5.module.browser.js
-dist/netflux.es5.module.node.js
-```
-Recommended for using along with `RollupJS`, `Webpack`, `SystemJS` or any other ES module loader.
-```
-import {create, BotServer, WEB_RTC, WEB_SOCKET} from 'netflux'
+
+`esm/index.node.js` and `esm/index.browser.js` are suitable for Webpack, Browserify or any alike, which also undersands `package.json#module` and `package.json#module` properties respectively and can parse ES modules.
+
+`esm/index.node.js` is build for NodeJS: contains all exported API members and all necessary polyfills for NodeJS environment.
+
+`esm/index.browser.js` is build for browsers.
+
+```javascript
+export {WebGroup, WebGroupState, WebGroupBotServer, WebGroupBotServerOptions} from 'netflux'
+const wg = new WebGroup()
 ```
 
-## UMD module
-```
-dist/netflux.es5.umd.js
-```
-Universal Module Definition module is compatible with AMD, CommonJS and "global" modules. It works in browser and NodeJS.
-### Browser
+## UMD
+
+`dist/netflux.umd.js` - Universal Module Definition format is compatible with AMD, CommonJS and "global" modules. Built for browser and suitable for Webpack, Browserify and any other who also understands `package.json#browser` property.
+
 ```html
+<!-- Browser global usage example -->
 <script src="netflux.es5.umd.js">
   window.netflux !== undefined // true
+  var wg = new window.netflux.WebGroup()
 </script>
 ```
 
-**CDN**: https://cdn.rawgit.com/coast-team/netflux/v1.0.0-rc.13/dist/netflux.es5.umd.js
+## Configuration
 
+For a `WebGroup` object all options are optional.
 
-### NodeJS
+```javascript
+// Example:
+const wg = new WebGroup({
+  signalingServer: 'MY_SIGNALING_URL',
+  rtcConfiguration: {
+    iceServers: [
+      { urls: 'stun:mystun.org' },
+      {
+        urls: ['turn:myturn.org?transport=udp', 'turn:myturn.org?transport=tcp'],
+        username: 'user',
+        password: 'password'
+      }
+    ]
+  }
+})
+```
 
-```Javascript
-const netflux = require('netflux')
+For `WebGroupBotServer` the server option is mandatory.
+
+```javascript
+// Example:
+const http = require('http')
+const myServer = http.createServer()
+const wg = new WebGroupBotServer({
+  server: myServer,
+  signalingServer: 'MY_SIGNALING_URL',
+  webGroupOptions: {
+    rtcConfiguration: {
+    iceServers: [
+      { urls: 'stun:mystun.org' },
+      {
+        urls: ['turn:myturn.org?transport=udp', 'turn:myturn.org?transport=tcp'],
+        username: 'user',
+        password: 'password'
+      }
+    ]
+  }
+  }
+})
 ```
