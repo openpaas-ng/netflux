@@ -1,21 +1,21 @@
 {
   "coverage": "100%",
-  "expectCount": 69,
-  "actualCount": 69,
+  "expectCount": 54,
+  "actualCount": 54,
   "files": {
-    "src/BotServerFacade.js": {
-      "expectCount": 8,
-      "actualCount": 8,
+    "src/BotFacade.js": {
+      "expectCount": 9,
+      "actualCount": 9,
       "undocumentLines": []
     },
     "src/WebChannelFacade.js": {
-      "expectCount": 31,
-      "actualCount": 31,
+      "expectCount": 24,
+      "actualCount": 24,
       "undocumentLines": []
     },
-    "src/index.common.js": {
-      "expectCount": 30,
-      "actualCount": 30,
+    "src/index.common.doc.js": {
+      "expectCount": 21,
+      "actualCount": 21,
       "undocumentLines": []
     }
   }

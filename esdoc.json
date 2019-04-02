@@ -1,15 +1,15 @@
 {
   "source": "./docs/jsFromTs/src",
   "destination": "./docs",
-  "includes": [".*Facade\\.js", ".*index\\.common\\.js"],
+  "includes": [".*Facade\\.js", ".*index\\.common\\.doc\\.js"],
   "plugins": [
     {
       "name": "esdoc-standard-plugin",
       "option": {
-        "accessor": {"access": ["public", "protected", "private"], "autoPrivate": false},
-        "undocumentIdentifier": {"enable": false},
-        "unexportedIdentifier": {"enable": true},
-        "typeInference": {"enable": false},
+        "accessor": { "access": ["public", "protected", "private"], "autoPrivate": false },
+        "undocumentIdentifier": { "enable": false },
+        "unexportedIdentifier": { "enable": true },
+        "typeInference": { "enable": false },
         "brand": {
           "logo": "./manual/asset/logo_favicon.jpg",
           "title": "Netflux",
@@ -17,13 +17,13 @@
           "repository": "https://github.com/coast-team/netflux"
         },
         "manual": {
-          "index": "./manual/index.md",
           "globalIndex": true,
           "asset": "./manual/asset",
           "files": [
             "./manual/installation.md",
             "./manual/usage.md",
-            "./manual/knownobstacles.md"
+            "./manual/knownobstacles.md",
+            "./manual/faq.md"
           ]
         },
         "test": {

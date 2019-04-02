@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <base data-ice="baseUrl" href="../../../">
+  <title data-ice="title">test/functional/3-client_bot_client.test.js | Netflux</title>
+  <link type="text/css" rel="stylesheet" href="css/style.css">
+  <link type="text/css" rel="stylesheet" href="css/prettify-tomorrow.css">
+  <script src="script/prettify/prettify.js"></script>
+  <script src="script/manual.js"></script>
+<link rel="stylesheet" href="./inject/css/0-style.css"><meta name="description" content="Abstract peer to peer client transport API. Implementations based on WebRTC and webSocket to be done."><meta property="twitter:card" content="summary"><meta property="twitter:title" content="Netflux"><meta property="twitter:description" content="Abstract peer to peer client transport API. Implementations based on WebRTC and webSocket to be done."></head>
+<body class="layout-container" data-ice="rootContainer">
+
+<header>
+  <a href="./" style="display: flex; align-items: center;"><img src="./image/brand_logo.jpg" style="width:34px;"></a>
+  <a href="./manual/index.html" data-ice="manualHeaderLink">Manual</a>
+  <a href="identifiers.html">Reference</a>
+  <a href="source.html">Source</a>
+  <a href="test.html" data-ice="testLink">Test</a>
+  <div class="search-box">
+  <span>
+    <img src="./image/search.png">
+    <span class="search-input-edge"></span><input class="search-input"><span class="search-input-edge"></span>
+  </span>
+    <ul class="search-result"></ul>
+  </div>
+<a style="position:relative; top:3px;" href="https://github.com/coast-team/netflux"><img width="20px" src="./image/github.png"></a></header>
+
+<nav class="navigation" data-ice="nav"><div>
+  <ul>
+    
+  <li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/BotFacade.js~Bot.html">Bot</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/WebChannelFacade.js~WebGroup.html">WebGroup</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/index.common.doc.js~LogLevel.html">LogLevel</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/index.common.doc.js~SignalingState.html">SignalingState</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/index.common.doc.js~Topology.html">Topology</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-class">C</span><span data-ice="name"><span><a href="class/src/index.common.doc.js~WebGroupState.html">WebGroupState</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-function">F</span><span data-ice="name"><span><a href="function/index.html#static-function-setLogLevel">setLogLevel</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-DataType">DataType</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-BotOptions">BotOptions</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-typedef">T</span><span data-ice="name"><span><a href="typedef/index.html#static-typedef-WebGroupOptions">WebGroupOptions</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-external">E</span><span data-ice="name"><span><a href="https://nodejs.org/api/http.html#http_class_http_server">HttpServer</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-external">E</span><span data-ice="name"><span><a href="https://nodejs.org/api/https.html#https_class_https_server">HttpsServer</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-external">E</span><span data-ice="name"><span><a href="https://developer.mozilla.org/en/docs/Web/API/RTCConfiguration">RTCConfiguration</a></span></span></li>
+<li data-ice="doc"><span data-ice="kind" class="kind-external">E</span><span data-ice="name"><span><a href="https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array">Uint8Array</a></span></span></li>
+</ul>
+</div>
+</nav>
+
+<div class="content" data-ice="content"><h1 data-ice="title">test/functional/3-client_bot_client.test.js</h1>
+<pre class="source-code line-number raw-source-code"><code class="prettyprint linenums" data-ice="content">/// &lt;reference types=&apos;jasmine&apos; /&gt;
+/* tslint:disable:one-variable-per-declaration */
+import { SignalingState, Topology, WebGroup, WebGroupState } from &apos;../../src/index.browser&apos;;
+import { areTheSame, BOT_URL, botGetData, botWaitJoin, randomKey, SIGNALING_URL, } from &apos;../util/helper&apos;;
+const WebGroupOptions = {
+    signalingServer: SIGNALING_URL,
+    autoRejoin: false,
+};
+/** @test {WebGroup} */
+describe(&apos;&#x1F642; &#x1F916; &#x1F642; - 3 members: 1 client, 1 bot and 1 client&apos;, () =&gt; {
+    /** @test {WebGroup#join} */
+    it(&apos;join&apos;, (done) =&gt; {
+        const key = randomKey();
+        let wgId;
+        const wg1 = new WebGroup(WebGroupOptions);
+        wgId = wg1.id;
+        const wg1JoinedMembers = [];
+        const wg1LeftMembers = [];
+        let wg1OnMessageCalled = 0;
+        const wg2 = new WebGroup(WebGroupOptions);
+        const wg2LeftMembers = [];
+        const wg2JoinedMembers = [];
+        let wg2OnMessageCalled = 0;
+        wg1.onMessage = () =&gt; wg1OnMessageCalled++;
+        wg1.onMemberJoin = (id) =&gt; wg1JoinedMembers.push(id);
+        wg1.onMemberLeave = (id) =&gt; wg1LeftMembers.push(id);
+        wg1.onStateChange = (state) =&gt; {
+            if (state === WebGroupState.JOINED) {
+                wgId = wg1.id;
+                wg1.invite(BOT_URL);
+            }
+        };
+        wg1.onMessage = () =&gt; wg2OnMessageCalled++;
+        wg2.onMemberJoin = (id) =&gt; wg2JoinedMembers.push(id);
+        wg2.onMemberLeave = (id) =&gt; wg2LeftMembers.push(id);
+        botWaitJoin(key)
+            .then(() =&gt; {
+            wg2.join(key);
+            return new Promise((resolve) =&gt; {
+                wg2.onStateChange = (state) =&gt; {
+                    if (state === WebGroupState.JOINED) {
+                        resolve();
+                    }
+                };
+            });
+        })
+            .then(() =&gt; botGetData(key))
+            .then((bot) =&gt; {
+            const expectedMembers = [wg1.myId, wg2.myId, bot.myId];
+            // Expect for the first client
+            expect(wg1.state).toEqual(WebGroupState.JOINED);
+            expect(wg1.signalingState).not.toEqual(SignalingState.CLOSED);
+            expect(wg1OnMessageCalled).toEqual(0);
+            expect(wg1.key).toEqual(key);
+            expect(wg1.id).toEqual(wgId);
+            expect(wg1.topology).toEqual(Topology.FULL_MESH);
+            expect(wg1.signalingServer).toEqual(SIGNALING_URL);
+            expect(wg1.autoRejoin).toBeFalsy();
+            expect(areTheSame(wg1.members, expectedMembers)).toBeTruthy();
+            expect(areTheSame(wg1JoinedMembers, [wg2.myId, bot.myId])).toBeTruthy();
+            expect(areTheSame(wg1LeftMembers, [])).toBeTruthy();
+            // Expect for the second client
+            expect(wg2.state).toEqual(WebGroupState.JOINED);
+            expect(wg2.signalingState).not.toEqual(SignalingState.CLOSED);
+            expect(wg2OnMessageCalled).toEqual(0);
+            expect(wg2.key).toEqual(key);
+            expect(wg2.id).toEqual(wgId);
+            expect(wg2.topology).toEqual(Topology.FULL_MESH);
+            expect(wg2.signalingServer).toEqual(SIGNALING_URL);
+            expect(wg2.autoRejoin).toBeFalsy();
+            expect(areTheSame(wg2.members, expectedMembers)).toBeTruthy();
+            expect(areTheSame(wg2JoinedMembers, [wg1.myId, bot.myId])).toBeTruthy();
+            expect(areTheSame(wg2LeftMembers, [])).toBeTruthy();
+            // Expect for the bot
+            expect(bot.state).toEqual(WebGroupState.JOINED);
+            expect(bot.signalingState).not.toEqual(SignalingState.CLOSED);
+            expect(bot.onMessageToBeCalled).toEqual(0);
+            expect(bot.key).toEqual(key);
+            expect(bot.id).toEqual(wgId);
+            expect(bot.topology).toEqual(Topology.FULL_MESH);
+            expect(bot.signalingServer).toEqual(SIGNALING_URL);
+            expect(bot.autoRejoin).toBeFalsy();
+            expect(areTheSame(bot.members, expectedMembers)).toBeTruthy();
+            expect(areTheSame(bot.joinedMembers, [wg1.myId, wg2.myId])).toBeTruthy();
+            expect(areTheSame(bot.leftMembers, [])).toBeTruthy();
+            done();
+        });
+        wg1.join(key);
+    });
+});
+</code></pre>
+
+</div>
+
+<footer class="footer">
+  Generated by <a href="https://esdoc.org">ESDoc<span data-ice="esdocVersion">(1.1.0)</span><img src="./image/esdoc-logo-mini-black.png"></a>
+</footer>
+
+<script src="script/search_index.js"></script>
+<script src="script/search.js"></script>
+<script src="script/pretty-print.js"></script>
+<script src="script/inherited-summary.js"></script>
+<script src="script/test-summary.js"></script>
+<script src="script/inner-link.js"></script>
+<script src="script/patch-for-local.js"></script>
+</body>
+</html>

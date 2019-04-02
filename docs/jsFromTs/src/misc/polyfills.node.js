@@ -1,20 +1,16 @@
-"use strict";
-try {
-    const wrtc = require('wrtc');
-    global.RTCPeerConnection = wrtc.RTCPeerConnection;
-    global.RTCDataChannel = wrtc.RTCDataChannel;
-    global.RTCIceCandidate = wrtc.RTCIceCandidate;
-}
-catch (err) {
-    console.warn(err.message);
-}
-global.WebSocket = require('uws');
-const textEncoding = require('text-encoding');
-global.TextEncoder = textEncoding.TextEncoder;
-global.TextDecoder = textEncoding.TextDecoder;
-global.crypto = require('crypto');
-global.Event = class Event {
-    constructor(name) {
-        this.name = name;
-    }
-};
+import * as crypto from 'crypto';
+import { TextDecoder, TextEncoder } from 'text-encoding';
+import * as WebSocket from 'uws';
+import { env } from './env';
+// TODO: add wrtc for WebRTC/RTCDataChannel support in NodeJS
+// try {
+//   const wrtc = require('wrtc')
+//   env.RTCPeerConnection = wrtc.RTCPeerConnection
+//   env.RTCIceCandidate = wrtc.RTCIceCandidate
+// } catch (err) {
+//   console.warn(err.message)
+// }
+env.WebSocket = WebSocket;
+env.TextEncoder = TextEncoder;
+env.TextDecoder = TextDecoder;
+env.cryptoNode = crypto;

@@ -1,66 +1,51 @@
-import { BehaviorSubject } from 'rxjs/BehaviorSubject';
-import { Subject } from 'rxjs/Subject';
+import { BehaviorSubject, Subject } from 'rxjs';
 import { Channel } from './Channel';
-import { isURL } from './misc/Util';
-export const CONNECT_TIMEOUT = 6000;
-const listenSubject = new BehaviorSubject('');
+import { env } from './misc/env';
+import { validateWebSocketURL } from './misc/util';
+export const CONNECT_TIMEOUT = 4000;
 /**
  * Service class responsible to establish connections between peers via
  * `WebSocket`.
  */
 export class WebSocketBuilder {
-    static listen() {
-        return listenSubject;
-    }
-    static newIncomingSocket(wc, ws, senderId) {
-        wc.webSocketBuilder.channelsSubject.next(new Channel(wc, ws, { id: senderId }));
-    }
     constructor(wc) {
         this.wc = wc;
         this.channelsSubject = new Subject();
     }
-    get onChannel() {
+    get channels() {
         return this.channelsSubject.asObservable();
     }
-    /**
-     * Establish `WebSocket` with a server if `id` is not specified,
-     * otherwise return an opened `Channel` with a peer identified by the
-     * specified `id`.
-     *
-     * @param url Server URL
-     * @param id  Peer id
-     */
-    connect(url, id) {
-        return new Promise((resolve, reject) => {
-            try {
-                if (isURL(url) && url.search(/^wss?/) !== -1) {
-                    const fullUrl = id !== undefined ? `${url}/internalChannel?wcId=${this.wc.id}&senderId=${this.wc.myId}` : url;
-                    const ws = new global.WebSocket(fullUrl);
-                    const timeout = setTimeout(() => {
-                        if (ws.readyState !== ws.OPEN) {
-                            ws.close();
-                            reject(new Error(`WebSocket ${CONNECT_TIMEOUT}ms connection timeout with '${url}'`));
-                        }
-                    }, CONNECT_TIMEOUT);
-                    ws.onopen = () => {
-                        clearTimeout(timeout);
-                        if (id === undefined) {
-                            resolve(ws);
-                        }
-                        else {
-                            resolve(new Channel(this.wc, ws, { id }));
-                        }
-                    };
-                    ws.onerror = (err) => reject(err);
-                    ws.onclose = (closeEvt) => reject(new Error(`WebSocket connection to '${url}' failed with code ${closeEvt.code}: ${closeEvt.reason}`));
+    newWebSocket(ws, id, type) {
+        this.channelsSubject.next({ id, channel: new Channel(this.wc, ws, type, id) });
+    }
+    async connect(url, type, targetId, myId, wcId) {
+        validateWebSocketURL(url);
+        const fullUrl = this.composeUrl(url, Channel.remoteType(type), wcId, myId);
+        const ws = new env.WebSocket(fullUrl);
+        const channel = (await new Promise((resolve, reject) => {
+            const timeout = setTimeout(() => {
+                if (ws.readyState !== ws.OPEN) {
+                    ws.close();
+                    reject(new Error(`WebSocket ${CONNECT_TIMEOUT}ms connection timeout with '${url}'`));
                 }
-                else {
-                    reject(new Error(`${url} is not a valid URL`));
-                }
-            }
-            catch (err) {
-                reject(err);
-            }
-        });
+            }, CONNECT_TIMEOUT);
+            ws.onopen = () => {
+                clearTimeout(timeout);
+                resolve(new Channel(this.wc, ws, type, targetId));
+            };
+            ws.onerror = (err) => reject(err);
+            ws.onclose = (closeEvt) => {
+                reject(new Error(`WebSocket with '${url}' closed ${closeEvt.code}: ${closeEvt.reason}`));
+            };
+        }));
+        this.channelsSubject.next({ id: targetId, channel });
+    }
+    composeUrl(url, type, wcId, senderId) {
+        let result = `${url}/?type=${type}&wcId=${wcId}&senderId=${senderId}`;
+        if (type !== Channel.WITH_INTERNAL) {
+            result += `&key=${this.wc.key}`;
+        }
+        return result;
     }
 }
+WebSocketBuilder.listenUrl = new BehaviorSubject('');

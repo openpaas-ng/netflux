@@ -1,7 +1,11 @@
-import { ReplaySubject } from 'rxjs/ReplaySubject'
+import { Bot, WebGroup, WebGroupState } from '../../src/index.node'
+import { LogLevel, setLogLevel } from '../../src/misc/util'
+import { BOT_HOST, BOT_PORT, IBotData, SIGNALING_URL } from './helper'
 
-import { SignalingState, WebGroup, WebGroupBotServer, WebGroupState } from '../../src/index.node'
-import { BOT_HOST, BOT_PORT } from './helper'
+setLogLevel(LogLevel.DEBUG)
+
+declare const process: any
+declare const require: any
 
 // Require dependencies
 const http = require('http')
@@ -9,79 +13,70 @@ const Koa = require('koa')
 const Router = require('koa-router')
 const cors = require('kcors')
 
-interface IData {
-  onMemberJoinCalled: number
-  joinedMembers: number[]
-  onMemberLeaveCalled: number
-  leftMembers: number
-  onStateCalled: number
-  states: WebGroupState[]
-  onSignalingStateCalled: number
-  signalingStates: SignalingState[]
-  messages: any[]
-  onMessageToBeCalled: number
-  state: WebGroupState
-  signalingState: SignalingState
-  key: string
-  topology: number
-  members: number[]
-  myId: number
-  id: number
-}
-
+const webGroupOptions = { signalingServer: SIGNALING_URL, autoRejoin: false }
 try {
   // Instantiate main objects
   const app = new Koa()
   const router = new Router()
   const server = http.createServer(app.callback())
-  const bot = new WebGroupBotServer({ server })
-  const webGroups: ReplaySubject<WebGroup> = new ReplaySubject()
+  const bot = new Bot({ server, webGroupOptions })
 
   // Configure router
   router
-    .get('/data/:wcId', (ctx: any) => {
-      const wcId = Number(ctx.params.wcId)
-      for (const wg of bot.webGroups) {
-        if (wg.id === wcId) {
+    .get('/new/:key', async (ctx: any) => {
+      const key = ctx.params.key
+      const wg = addWebGroup(bot)
+      wg.join(key)
+      bot.webGroups.set(wg.id, wg)
+      await (wg as any).waitJoin
+      ctx.body = { id: wg.id }
+    })
+    .get('/leave/:key', (ctx: any) => {
+      const key = ctx.params.key
+      for (const [, wg] of bot.webGroups) {
+        if (wg.key === key) {
+          wg.leave()
+          bot.webGroups.delete(wg.id)
           ctx.body = fullData(wg)
           return
         }
       }
-      ctx.throw(404, 'WebGroup ' + wcId + ' not found')
     })
-    .get('/waitJoin/:wcId', async (ctx: any) => {
-      const wcId = Number(ctx.params.wcId)
-      await new Promise((resolve) => {
-        webGroups.subscribe((wg: WebGroup) => {
-          if (wg.id === wcId) {
-            resolve()
-          }
-        })
-      })
-      for (const wg of bot.webGroups) {
-        if (wg.id === wcId) {
-          await (wg as any).waitJoin
-          ctx.body = {id: wcId}
+    .get('/data/:key', (ctx: any) => {
+      const key = ctx.params.key
+      for (const [, wg] of bot.webGroups) {
+        if (wg.key === key) {
+          ctx.body = fullData(wg)
           return
         }
       }
-      console.log('err')
-      ctx.throw(404, 'WebGroup ' + wcId + ' not found')
+      ctx.throw(404, 'WebGroup ' + key + ' not found')
     })
-    .get('/send/:wcId', (ctx: any) => {
-      const wcId = Number(ctx.params.wcId)
-      for (const wc of bot.webGroups) {
-        if (wc.id === wcId) {
+    .get('/waitJoin/:key', async (ctx: any) => {
+      const key = ctx.params.key
+      for (const [, wg] of bot.webGroups) {
+        if (wg.key === key) {
+          await (wg as any).waitJoin
+          ctx.body = { id: wg.id }
+          return
+        }
+      }
+      ctx.throw(404, 'WebGroup ' + key + ' not found')
+    })
+    .get('/send/:key', (ctx: any) => {
+      const key = ctx.params.key
+      for (const [id, wg] of bot.webGroups) {
+        if (wg.key === key) {
           // Create a message
-          const msg = JSON.stringify({ id: wc.myId })
+          const msg = JSON.stringify({ id: wg.myId })
 
           // Broadcast the message
-          wc.send(msg)
+          wg.send(msg)
 
           // Send the message privately to each peer
-          wc.members.forEach((id) => {
-            if (id !== wc.myId) {
-              wc.sendTo(id, msg)
+          wg.members.forEach((i) => {
+            if (i !== wg.myId) {
+              wg.sendTo(id, msg)
             }
           })
           ctx.status = 200
@@ -97,82 +92,92 @@ try {
     .use(router.allowedMethods())
 
   // Configure bot
-  bot.onWebGroup = (wg: WebGroup) => {
-    const data: any = {
-      onMemberJoinCalled: 0,
-      joinedMembers: [],
-      onMemberLeaveCalled: 0,
-      leftMembers: [],
-      onStateCalled: 0,
-      states: [],
-      onSignalingStateCalled: 0,
-      signalingStates: [],
-      messages: [],
-      onMessageToBeCalled: 0,
-    }
-    const anyWg = (wg as any)
-    anyWg.waitJoin = new Promise((resolve) => {
-      wg.onStateChange = (state) => {
-        if (state === WebGroupState.JOINED) {
-          resolve()
-        }
-        data.onStateCalled++
-        data.states.push(state)
-      }
-    })
-    wg.onMessage = (id, msg: string | Uint8Array) => {
-      data.onMessageToBeCalled++
-      data.messages.push({
-        id,
-        msg: msg instanceof Uint8Array ? Array.from(msg) : msg,
-      })
-      let feedback
-      let isSend = false
-      if (typeof msg === 'string') {
-        feedback = 'bot: ' + msg
-        isSend = msg.startsWith('send')
-      } else {
-        isSend = msg[0] === 10
-        msg[0] = 42
-        feedback = msg
-      }
-      if (isSend) {
-        wg.send(feedback)
-      } else {
-        wg.sendTo(id, feedback)
-      }
-    }
-    wg.onMemberJoin = (id) => {
-      data.onMemberJoinCalled++
-      data.joinedMembers.push(id)
-    }
-    wg.onMemberLeave = (id) => {
-      data.onMemberLeaveCalled++
-      data.leftMembers.push(id)
-    }
-
-    wg.onSignalingStateChange = (state) => {
-      data.onSignalingStateCalled++
-      data.signalingStates.push(state)
-    }
-    anyWg.data = data
-    webGroups.next(wg)
-  }
+  bot.onWebGroup = (wg: WebGroup) => configWebGroup(wg)
   bot.onError = (err) => console.error('Bot ERROR: ', err)
+
   // Start the server
   server.listen(BOT_PORT, BOT_HOST, () => {
     const host = server.address().address
     const port = server.address().port
     console.info('Netflux bot is listening on ' + host + ':' + port)
   })
-
-  // Leave all web channels before process death
   process.on('SIGINT', () => bot.webGroups.forEach((wg) => wg.leave()))
 } catch (err) {
-  console.error('WebGroupBotServer script error: ', err)
+  // console.error('Bot server error: ', err)
 }
 
-function fullData (wg: any): IData {
+function addWebGroup(bot: Bot): WebGroup {
+  const wg = new WebGroup(webGroupOptions)
+  configWebGroup(wg)
+  return wg
+}
+
+function configWebGroup(wg: WebGroup) {
+  const data: any = {
+    autoRejoin: false,
+    onMemberJoinCalled: 0,
+    joinedMembers: [],
+    onMemberLeaveCalled: 0,
+    leftMembers: [],
+    onStateCalled: 0,
+    states: [],
+    onSignalingStateCalled: 0,
+    signalingStates: [],
+    messages: [],
+    onMessageToBeCalled: 0,
+    onMyIdToBeCalled: 0,
+    signalingServer: '',
+  }
+  const anyWg = wg as any
+  anyWg.waitJoin = new Promise((resolve) => {
+    wg.onStateChange = (state) => {
+      if (state === WebGroupState.JOINED) {
+        resolve()
+      }
+      data.onStateCalled++
+      data.states.push(state)
+    }
+  })
+  wg.onMyId = (id) => data.onMyIdToBeCalled++
+  wg.onMessage = (id, msg) => {
+    data.onMessageToBeCalled++
+    data.messages.push({
+      id,
+      msg: msg instanceof Uint8Array ? Array.from(msg) : msg,
+    })
+    let feedback
+    let isSend = false
+    if (typeof msg === 'string') {
+      feedback = 'bot: ' + msg
+      isSend = msg.startsWith('send')
+    } else {
+      isSend = msg[0] === 10
+      msg[0] = 42
+      feedback = msg
+    }
+    if (isSend) {
+      wg.send(feedback)
+    } else {
+      wg.sendTo(id, feedback)
+    }
+  }
+  wg.onMemberJoin = (id) => {
+    data.onMemberJoinCalled++
+    data.joinedMembers.push(id)
+  }
+  wg.onMemberLeave = (id) => {
+    data.onMemberLeaveCalled++
+    data.leftMembers.push(id)
+  }
+
+  wg.onSignalingStateChange = (state) => {
+    data.onSignalingStateCalled++
+    data.signalingStates.push(state)
+  }
+  anyWg.data = data
+}
+
+function fullData(wg: any): IBotData {
   wg.data.state = wg.state
   wg.data.signalingState = wg.signalingState
   wg.data.key = wg.key
@@ -180,5 +185,7 @@ function fullData (wg: any): IData {
   wg.data.members = wg.members
   wg.data.myId = wg.myId
   wg.data.id = wg.id
+  wg.data.autoRejoin = wg.autoRejoin
+  wg.data.signalingServer = wg.signalingServer
   return wg.data
 }

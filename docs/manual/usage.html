@@ -12,8 +12,8 @@
 <body class="layout-container manual-root" data-ice="rootContainer">
 
 <header>
-  <a href="./" style="display: flex; align-items: center;"><img src="./image/brand_logo.png" style="width:34px;"></a>
-  
+  <a href="./" style="display: flex; align-items: center;"><img src="./image/brand_logo.jpg" style="width:34px;"></a>
+  <a href="./manual/index.html" data-ice="manualHeaderLink">Manual</a>
   <a href="identifiers.html">Reference</a>
   <a href="source.html">Source</a>
   <a href="test.html" data-ice="testLink">Test</a>
@@ -57,6 +57,22 @@
 <li data-ice="manualNav" class="indent-h2" data-link="manual/knownobstacles.html"><a href="manual/knownobstacles.html#firefox-extensions" data-ice="link">Firefox extensions</a></li>
 </ul>
   </div>
+<div data-ice="manual">
+    <ul class="manual-toc">
+      
+    <li data-ice="manualNav" class="indent-h1" data-link="manual/faq.html"><a href="manual/faq.html" data-ice="link">FAQ</a></li>
+<li data-ice="manualNav" class="indent-h2" data-link="manual/faq.html"><a href="manual/faq.html#how-netflux-chooses-between--code-rtcdatachannel--code--and--code-websocket--code-" data-ice="link">How Netflux chooses between RTCDataChannel and WebSocket</a></li>
+<li data-ice="manualNav" class="indent-h2" data-link="manual/faq.html"><a href="manual/faq.html#state-description" data-ice="link">State description</a></li>
+<li data-ice="manualNav" class="indent-h3" data-link="manual/faq.html"><a href="manual/faq.html#events" data-ice="link">Events</a></li>
+<li data-ice="manualNav" class="indent-h4" data-link="manual/faq.html"><a href="manual/faq.html#member-left-event" data-ice="link">Member left event</a></li>
+<li data-ice="manualNav" class="indent-h4" data-link="manual/faq.html"><a href="manual/faq.html#signaling-state-event" data-ice="link">Signaling state event</a></li>
+<li data-ice="manualNav" class="indent-h4" data-link="manual/faq.html"><a href="manual/faq.html#topology-state-event" data-ice="link">Topology state event</a></li>
+<li data-ice="manualNav" class="indent-h4" data-link="manual/faq.html"><a href="manual/faq.html#join-method-call" data-ice="link">Join method call</a></li>
+<li data-ice="manualNav" class="indent-h4" data-link="manual/faq.html"><a href="manual/faq.html#leave-method-call" data-ice="link">Leave method call</a></li>
+<li data-ice="manualNav" class="indent-h4" data-link="manual/faq.html"><a href="manual/faq.html#online---event--online-offline-events--navigator-online-" data-ice="link">onLine() event (online/offline events, navigator.onLine)</a></li>
+<li data-ice="manualNav" class="indent-h4" data-link="manual/faq.html"><a href="manual/faq.html#isvisible---event--page-visibility-api-" data-ice="link">isVisible() event (Page Visibility API)</a></li>
+</ul>
+  </div>
 </div>
 </nav>
 
@@ -86,8 +102,8 @@
 </ul>
 <p><strong>For NodeJS environment</strong> exported members are the same as for browser plus:</p>
 <ul>
-<li><code>WebGroupBotServer</code> class</li>
-<li><code>WebGroupBotServerOptions</code> type.</li>
+<li><code>Bot</code> class</li>
+<li><code>BotOptions</code> type.</li>
 </ul>
 <h2 id="commonjs">CommonJS</h2><p><code>dist/netflux.cjs.js</code> - CommonJS format, built for NodeJS.</p>
 <pre><code class="lang-Javascript"><code class="source-code prettyprint">// NodeJS
@@ -96,12 +112,11 @@ var wg = new netflux.WebGroup()</code>
 </code></pre>
 <h2 id="es-module">ES module</h2><p><code>esm/index.node.js</code> and <code>esm/index.browser.js</code> are suitable for Webpack, Browserify or any alike, which also undersands <code>package.json#module</code> and <code>package.json#module</code> properties respectively and can parse ES modules.</p>
 <p><code>esm/index.node.js</code> is build for NodeJS: contains all exported API members and all necessary polyfills for NodeJS environment.</p>
-<p><code>esm/index.browser.js</code>  si build for browsers.</p>
-<pre><code class="lang-javascript"><code class="source-code prettyprint">export {WebGroup, WebGroupState, WebGroupBotServer, WebGroupBotServerOptions} from &apos;netflux&apos;
+<p><code>esm/index.browser.js</code> is build for browsers.</p>
+<pre><code class="lang-javascript"><code class="source-code prettyprint">export { WebGroup, WebGroupState, Bot, BotOptions } from &apos;netflux&apos;
 const wg = new WebGroup()</code>
 </code></pre>
-<h2 id="umd">UMD</h2><p><code>dist/netflux.umd.js</code> - Universal Module Definition format is compatible with AMD, CommonJS and &quot;global&quot; modules. Built for browser and suitable for Webpack, Browserify and any other who
-also understands <code>package.json#browser</code> property.</p>
+<h2 id="umd">UMD</h2><p><code>dist/netflux.umd.js</code> - Universal Module Definition format is compatible with AMD, CommonJS and &quot;global&quot; modules. Built for browser and suitable for Webpack, Browserify and any other who also understands <code>package.json#browser</code> property.</p>
 <pre><code class="lang-html"><code class="source-code prettyprint">&lt;!-- Browser global usage example --&gt;
 &lt;script src=&quot;netflux.es5.umd.js&quot;&gt;
   window.netflux !== undefined // true
@@ -111,45 +126,45 @@ also understands <code>package.json#browser</code> property.</p>
 <h2 id="configuration">Configuration</h2><p>For a <code>WebGroup</code> object all options are optional.</p>
 <pre><code class="lang-javascript"><code class="source-code prettyprint">// Example:
 const wg = new WebGroup({
-  signalingURL: &apos;MY_SIGNALING_URL&apos;,
+  signalingServer: &apos;MY_SIGNALING_URL&apos;,
   rtcConfiguration: {
     iceServers: [
       { urls: &apos;stun:mystun.org&apos; },
       {
         urls: [&apos;turn:myturn.org?transport=udp&apos;, &apos;turn:myturn.org?transport=tcp&apos;],
         username: &apos;user&apos;,
-        password: &apos;password&apos;
-      }
-    ]
-  }
+        password: &apos;password&apos;,
+      },
+    ],
+  },
 })</code>
 </code></pre>
-<p>For <code>WebGroupBotServer</code> the server option is mandatory.</p>
+<p>For <code>Bot</code> the server option is mandatory.</p>
 <pre><code class="lang-javascript"><code class="source-code prettyprint">// Example:
 const http = require(&apos;http&apos;)
 const myServer = http.createServer()
-const wg = new WebGroupBotServer({
+const wg = new Bot({
   server: myServer,
   signalingServer: &apos;MY_SIGNALING_URL&apos;,
   webGroupOptions: {
     rtcConfiguration: {
-    iceServers: [
-      { urls: &apos;stun:mystun.org&apos; },
-      {
-        urls: [&apos;turn:myturn.org?transport=udp&apos;, &apos;turn:myturn.org?transport=tcp&apos;],
-        username: &apos;user&apos;,
-        password: &apos;password&apos;
-      }
-    ]
-  }
-  }
+      iceServers: [
+        { urls: &apos;stun:mystun.org&apos; },
+        {
+          urls: [&apos;turn:myturn.org?transport=udp&apos;, &apos;turn:myturn.org?transport=tcp&apos;],
+          username: &apos;user&apos;,
+          password: &apos;password&apos;,
+        },
+      ],
+    },
+  },
 })</code>
 </code></pre>
 </div>
 </div>
 
 <footer class="footer">
-  Generated by <a href="https://esdoc.org">ESDoc<span data-ice="esdocVersion">(1.0.4)</span><img src="./image/esdoc-logo-mini-black.png"></a>
+  Generated by <a href="https://esdoc.org">ESDoc<span data-ice="esdocVersion">(1.1.0)</span><img src="./image/esdoc-logo-mini-black.png"></a>
 </footer>
 
 <script src="script/search_index.js"></script>

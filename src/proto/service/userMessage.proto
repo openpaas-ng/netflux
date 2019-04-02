@@ -1,0 +1,22 @@
+syntax = "proto3";
+package userMessage;
+
+message Message {
+  uint32 length = 1;
+  Type type = 2;
+  oneof contentType {
+    bytes full = 3;
+    Chunk chunk = 4;
+  }
+
+  message Chunk {
+    uint32 id = 1;
+    uint32 nb = 2;
+    bytes content = 4;
+  }
+
+  enum Type {
+    STRING = 0;
+    U_INT_8_ARRAY = 1;
+  }
+}

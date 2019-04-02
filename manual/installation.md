@@ -3,10 +3,24 @@
 ## NPM
 
 ```shell
-npm install -S netflux
+npm install netflux
 ```
 
-Netflux has an optional peer dependency: `wrtc`. This package provides WebRTC API in NodeJS, but for now it is not in use as more tests needed. Checkout [wrtc repository](https://github.com/js-platform/node-webrtc) for more info on it.
+3 peer dependencies to be installed for some cases:
+
+- `rxjs` is necessary for both NodeJS and browsers if you want to take advantage of EcmaScript modules, tree-shaking etc. Otherwise for it is already included into `dist/netflux.browser.es5.umd.js` and `dist/netflux.node.es5.cjs.js` bundles.
+
+```shell
+npm install rxjs
+```
+
+- `uws` and `text-encoding` if you target NodeJS (developing a bot):
+
+```shell
+npm install uws text-encoding
+```
+
+Netflux has an optional dependency: `wrtc`. This package provides WebRTC API in NodeJS, but for now it is not in use as more tests needed. Checkout [wrtc repository](https://github.com/js-platform/node-webrtc) for more info on it.
 
 ## What you need
 
@@ -33,7 +47,7 @@ There are many other free STUN servers available in the Web.
 There are no free TURN servers available in the Web. Two solutions exist:
 
 - Rent one. Checkout [Xirsys](https://xirsys.com/) for example.
-- Deploy your own instance. The paragraphe below provides a guide on how to deploy and configure [`coturn`](https://github.com/coturn/coturn) open source TURN server. Also checkout [*Choosing a TURN server*](https://rtcquickstart.org/guide/multi/turn-server-choice.html) for a list of open source TURN servers.
+- Deploy your own instance. The paragraphe below provides a guide on how to deploy and configure [`coturn`](https://github.com/coturn/coturn) open source TURN server. Also checkout [_Choosing a TURN server_](https://rtcquickstart.org/guide/multi/turn-server-choice.html) for a list of open source TURN servers.
 
 ## How to deploy STUN/TURN servers
 

@@ -3,15 +3,23 @@ package channelBuilder;
 
 message Message {
   oneof type {
-    Connection request = 1;
-    Connection response = 2;
-    string failed = 3;
-    bool ping = 4;
-    bool pong = 5;
+    Negotiation negotiation = 1;
+    bytes connectionRequest = 2;
+    bool connectionResponse = 3;
   }
 }
 
-message Connection {
-  string wsUrl = 1;
-  bool isWrtcSupport = 2;
+message Negotiation {
+  Info initiator = 1;
+  Info passive = 2;
+}
+
+message Info {
+  uint32 id = 1;
+  string wss = 2;
+  uint32 wcId = 3;
+  bool wsSupported = 4;
+  bool wsTried = 5;
+  bool dcSupported = 6;
+  bool dcTried = 7;
 }

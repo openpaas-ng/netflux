@@ -30,8 +30,8 @@ All builds are either for NodeJS or for Browser environment.
 
 **For NodeJS environment** exported members are the same as for browser plus:
 
-- `WebGroupBotServer` class
-- `WebGroupBotServerOptions` type.
+- `Bot` class
+- `BotOptions` type.
 
 ## CommonJS
 
@@ -52,7 +52,7 @@ var wg = new netflux.WebGroup()
 `esm/index.browser.js` is build for browsers.
 
 ```javascript
-export {WebGroup, WebGroupState, WebGroupBotServer, WebGroupBotServerOptions} from 'netflux'
+export { WebGroup, WebGroupState, Bot, BotOptions } from 'netflux'
 const wg = new WebGroup()
 ```
 
@@ -82,33 +82,33 @@ const wg = new WebGroup({
       {
         urls: ['turn:myturn.org?transport=udp', 'turn:myturn.org?transport=tcp'],
         username: 'user',
-        password: 'password'
-      }
-    ]
-  }
+        password: 'password',
+      },
+    ],
+  },
 })
 ```
 
-For `WebGroupBotServer` the server option is mandatory.
+For `Bot` the server option is mandatory.
 
 ```javascript
 // Example:
 const http = require('http')
 const myServer = http.createServer()
-const wg = new WebGroupBotServer({
+const wg = new Bot({
   server: myServer,
   signalingServer: 'MY_SIGNALING_URL',
   webGroupOptions: {
     rtcConfiguration: {
-    iceServers: [
-      { urls: 'stun:mystun.org' },
-      {
-        urls: ['turn:myturn.org?transport=udp', 'turn:myturn.org?transport=tcp'],
-        username: 'user',
-        password: 'password'
-      }
-    ]
-  }
-  }
+      iceServers: [
+        { urls: 'stun:mystun.org' },
+        {
+          urls: ['turn:myturn.org?transport=udp', 'turn:myturn.org?transport=tcp'],
+          username: 'user',
+          password: 'password',
+        },
+      ],
+    },
+  },
 })
 ```

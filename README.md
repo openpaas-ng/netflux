@@ -1,95 +1,107 @@
-<p align="center">
-  <a href="https://coast-team.github.io/netflux">
-    <img src="manual/asset/logo_cropped.png" />
-  </a>
-</p>
+# Netflux
 
-<p align="center">
-  Universal Javascript <strong style="font-weight: bold">peer to peer</strong> transport API for client and server.<br />
-  Secure and fault tolerant full mesh peer to peer network based on <strong style="font-weight: bold">RTCDataChannel</strong> and <strong style="font-weight: bold">WebSocket</strong>.<br />
-  Send/receive <strong style="font-weight: bold">String</strong> and <strong style="font-weight: bold">Uint8Array</strong> data types.<br />
-  Documentation: https://coast-team.github.io/netflux
-</p>
+![Netflux logo][logo]
 
-<p align="center">
-  <a href="https://www.npmjs.com/package/netflux">
-    <img src="https://img.shields.io/npm/v/netflux.svg?style=flat-square" />
-  </a>&nbsp;
-  <a href="https://travis-ci.org/coast-team/netflux">
-    <img src="https://travis-ci.org/coast-team/netflux.svg?branch=master" />
-  </a>&nbsp;
-  <a href="https://coast-team.github.io/netflux">
-    <img src="https://coast-team.github.io/netflux/badge.svg" />
-  </a>&nbsp;
-  <a href="https://www.bithound.io/github/coast-team/netflux">
-    <img src="https://www.bithound.io/github/coast-team/netflux/badges/score.svg" />
-  </a>&nbsp;
+Isomorphic Javascript **peer to peer** transport API for client and server.
 
-  <br />
+Secure and fault tolerant full mesh peer to peer network based on **RTCDataChannel** and **WebSocket**.
 
-  <a href="http://commitizen.github.io/cz-cli">
-    <img src="https://img.shields.io/badge/commitizen-friendly-brightgreen.svg?style=flat-square" />
-  </a>&nbsp;
-  <a href="https://github.com/semantic-release/semantic-release">
-    <img src="https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg?style=flat-square" />
-  </a>&nbsp;
-  <a href="https://gitter.im/coast-team/netflux?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge">
-    <img src="https://img.shields.io/badge/GITTER-join%20chat-green.svg?style=flat-square" />
-  </a>
-</p>
+Send/receive **String** and **Uint8Array** data types.
 
-<p align="center">
-  <img src="manual/asset/example.png" />
-</p>
+Documentation: <https://coast-team.github.io/netflux>
+
+[![version](https://img.shields.io/npm/v/netflux.svg?style=flat-square)](https://www.npmjs.com/package/netflux)
+[![travis](https://travis-ci.org/coast-team/netflux.svg?branch=master)](https://travis-ci.org/coast-team/netflux)
+
+[![codeclimate](https://codeclimate.com/github/coast-team/netflux/badges/gpa.svg)](https://codeclimate.com/github/coast-team/netflux)
+[![Test Coverage](https://api.codeclimate.com/v1/badges/65c5d6308e7e58edd7b0/test_coverage)](https://codeclimate.com/github/coast-team/netflux/test_coverage)
+[![documentation](https://coast-team.github.io/netflux/badge.svg)](https://coast-team.github.io/netflux)
+
+[![Conventional Changelog](https://img.shields.io/badge/changelog-conventional-brightgreen.svg?)](http://conventional-changelog.github.io)
+[![semantic-release](https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg?style=flat-square)](https://github.com/semantic-release/semantic-release)
+[![gitter](https://img.shields.io/badge/GITTER-join%20chat-green.svg?style=flat-square)](https://gitter.im/coast-team/netflux?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
+![Netflux example][netflux_example]
 
 ## Features
 
-* Peer to peer full mesh network which accepts connection failures between some peers.
-* If connection between two members failed, other members will retransmit messages for them.
-* Automatic rejoin the group if connection lost.
-* Automatic selection between [WebSocket][WebSocket] & [RTCDataChannel][RTCDataChannel].
-* Possible to have mixed members: clients (Chrome, Firefox) and servers (NodeJS bot).
-* Send private or broadcast [String][String], [Uint8Array][Uint8Array] data types.
-* Possible to send big size data.
-* All connections are encrypted.
-* Full control over WebRTC servers: Signaling, STUN and TURN.
-  * Deploy your own Signaling server ([Sigver][Sigver]) or use one provided by default.
-  * Configure STUN and TURN servers.
-* Small Signaling server payload.
-* Signaling server is used only to establish connection between two peers, no user data is passing through it.
-* Universal API (works in Chrome/Firefox and NodeJS).
-* TypeScript declaration files are included.
-* Simple and familiar API usage.
-* 4 builds (ES5 code):
-  * `dist/netflux.cjs.js` * CommonJS format for NodeJS (see *package.json#main*).
-  * `dist/esm/index.node.js` * ES module format for NodeJS (see *package.json#module*).
-  * `dist/esm/index.browser.js` * ES module format for browsers (see *package.json#browser*).
-  * `dist/netflux.umd.js` * UMD format for browsers.
+- Peer to peer full mesh network tolerant to connection failures.
+- Same API for clients (Chrome, Firefox) and servers (NodeJS).
+- Send private or broadcast messages with [String][string], [Uint8Array][uint8array] data types.
+- Send large amounts of data (over the limit of ~16kb used in RTCDataChannel).
+- Automatic rejoin the group when connection lost.
+- Hide the connection nature ( [WebSocket][websocket] or [RTCDataChannel][rtcdatachannel]) from API consumer.
+- All connections are encrypted.
+- Full control over WebRTC servers: Signaling, STUN and TURN.
+  - Deploy your own Signaling server ([Sigver][sigver]) or use the one provided by default.
+  - Configure STUN and TURN servers.
+- Small Signaling server payload.
+- Signaling server is only used to establish connection between two peers, no user data is passing through it.
+- TypeScript declaration files are included.
+- Simple and familiar API usage.
+- Multiple bundles to suit your workflow:
+  - For NodeJS
+    - `dist/netflux.node.es5.cjs.js` commonjs format, es5 code (see _package.json#main_).
+    - `dist/netflux.node.es5.esm.js` ES module format, es5 code (see _package.json#module_).
+  - For browsers
+    - `dist/netflux.browser.es5.umd.js` UMD format, es5 code
+    - `dist/netflux.browser.es5.esm.js` ES module format, es5 code (see _package.json#browser_).
+    - `dist/netflux.browser.es2015.esm.js` ES module format, es2015 code (see _package.json#es2015_).
+    - `dist/netflux.browser.esnext.esm.js` ES module format, esnext code (see _package.json#esnext_).
+
+## Install
+
+```shell
+npm install netflux
+```
+
+3 peer dependencies to be installed in some cases:
+
+- `rxjs` is necessary for both NodeJS and browsers if you want to take advantage of EcmaScript modules, tree-shaking etc. Otherwise it is already included into `dist/netflux.browser.es5.umd.js` and `dist/netflux.node.es5.cjs.js` bundles.
+
+```shell
+npm install rxjs
+```
+
+- `uws` and `text-encoding` if you target NodeJS (developing a bot):
+
+```shell
+npm install uws text-encoding
+```
+
+**Why peer dependencies?**
+
+- Reduce the installation size by omitting unused dependencies.
+- Take advantage of new standards and techniques: EcmaScript modules, bundle tools like Webpack, Rollup etc.
 
 ## Usage
 
 Here is a basic usage example for client and server (checkout the [documenation](https://coast-team.github.io/netflux) for more details).
 
-> It is possible to have only clients without any bot server as his is not a mandatory member, but like any other group member.
+> Bot server is not mandatory. The group may completely be composed of clients only, as well as be composed of servers only or may also be mixed.
 
-### Client
+### Client example
 
 ```javascript
 import { WebGroup, WebGroupState } from 'netflux'
 
 // Create instance and set callbacks
 const wg = new WebGroup()
+
 wg.onMemberJoin = (id) => {
-  console.log('Member ' + id + ' has joined')
-  console.log('All members are: ', wg.members)
+  console.log(`Member ${id} has joined. Current members list is: `, wg.members)
+  // Say hello to the new peer
+  wg.sendTo(id, 'Hello, my name is Bob')
 }
+
 wg.onMemberLeave = (id) => {
-  console.log('Member ' + id + ' has left')
-  console.log('All members are: ', wg.members)
+  console.log(`Member ${id} has left. Remained members are: `, wg.members)
 }
+
 wg.onMessage = (id, data) => {
   console.log(`Message from ${id} group member`, data)
 }
+
 wg.onStateChange = (state) => {
   console.log('The new Group state is ', state)
   switch (state) {
@@ -97,15 +109,19 @@ wg.onStateChange = (state) => {
       // Do something
       break
     case WebGroupState.JOINED:
-      // Do something
-      // For example inviting a bot...
+      // Do something... for example invite a bot...
       wg.invite('BOT_SERVER_WEB_SOCKET_URL')
-      break
-    case WebGroupState.LEAVING:
-      // Do something
+      // Or send message to all peers
+      wg.send('Hello everybody. I have just joined the group.')
       break
     case WebGroupState.LEFT:
-      // Do something
+      // wg.key === ''
+      // wg.id === 0
+      // wg.myId === 0
+      // wg.members === []
+      // the current wg object is at the same state as if it was instantiated via new WebGroup(...), hence
+      // it can be reused to join another group for example.
+      // Do something...
       break
   }
 }
@@ -114,21 +130,22 @@ wg.onStateChange = (state) => {
 wg.join('MY_UNIQUE_KEY_FOR_THE_GROUP')
 ```
 
-### Bot Server
+### Bot example
 
 ```javascript
-import { WebGroupBotServer } from 'netflux'
+import { Bot, WebGroupState } from 'netflux'
 const http = require('http') // https is also possible
 const server = http.createServer()
 
-const bot = new WebGroupBotServer({
+const bot = new Bot({
   server: server,
   webGroupOptions: {
     // Any WebGroup options like for a client
-  }
+  },
 })
 
 bot.onWebGroup = (wg) => {
+  console.log('The current state is JOINING: ', wg.state === WebGroupState.JOINING)
   // New instance of a WebGroup (Someone has invited this bot).
   // See example above for client as it is the same API.
 }
@@ -139,27 +156,12 @@ server.listen(BOT_PORT, _BOT_HOST)
 
 ## Demo
 
-Netflux is used by our team for Multi User Text Editor ([MUTE repo](https://github.com/coast-team/mute)) development. The demo version is available on: https://coedit.re
+Netflux used as a transport layer for Multi User Text Editor ([MUTE repo](https://github.com/coast-team/mute)) developed by our team. The demo version is available on: <https://coedit.re>.
 
-[WebSocket]: https://developer.mozilla.org/en/docs/Web/API/WebSocket
-[RTCDataChannel]: https://developer.mozilla.org/en/docs/Web/API/RTCDataChannel
-[String]: https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/String
-[Uint8Array]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array
-[Sigver]: https://github.com/coast-team/sigver
-
-[commitizen]: https://img.shields.io/badge/commitizen-friendly-brightgreen.svg?style=flat-square
-[commitizen-url]: http://commitizen.github.io/cz-cli
-
-[bithound]: https://www.bithound.io/github/coast-team/netflux/badges/score.svg
-[bithound-url]: https://www.bithound.io/github/coast-team/netflux
-
-[codeclimate]: https://codeclimate.com/github/coast-team/netflux/badges/gpa.svg
-[codeclimate-url]: https://codeclimate.com/github/coast-team/netflux
-
-[coverage]: https://codeclimate.com/github/coast-team/netflux/badges/coverage.svg
-[coverage-url]: https://codeclimate.com/github/coast-team/netflux/coverage
-
-[doc]: https://coast-team.github.io/netflux/badge.svg
-[doc-url]: https://coast-team.github.io/netflux/netflux
-
-[logo]: manual/asset/logo_cropped.png "Netflux logo"
+[websocket]: https://developer.mozilla.org/en/docs/Web/API/WebSocket
+[rtcdatachannel]: https://developer.mozilla.org/en/docs/Web/API/RTCDataChannel
+[string]: https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/Global_Objects/String
+[uint8array]: https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Uint8Array
+[sigver]: https://github.com/coast-team/sigver
+[logo]: manual/asset/logo_760px.png
+[netflux_example]: manual/asset/example.png

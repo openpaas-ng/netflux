@@ -12,8 +12,8 @@
 <body class="layout-container manual-root" data-ice="rootContainer">
 
 <header>
-  <a href="./" style="display: flex; align-items: center;"><img src="./image/brand_logo.png" style="width:34px;"></a>
-  
+  <a href="./" style="display: flex; align-items: center;"><img src="./image/brand_logo.jpg" style="width:34px;"></a>
+  <a href="./manual/index.html" data-ice="manualHeaderLink">Manual</a>
   <a href="identifiers.html">Reference</a>
   <a href="source.html">Source</a>
   <a href="test.html" data-ice="testLink">Test</a>
@@ -57,12 +57,39 @@
 <li data-ice="manualNav" class="indent-h2" data-link="manual/knownobstacles.html"><a href="manual/knownobstacles.html#firefox-extensions" data-ice="link">Firefox extensions</a></li>
 </ul>
   </div>
+<div data-ice="manual">
+    <ul class="manual-toc">
+      
+    <li data-ice="manualNav" class="indent-h1" data-link="manual/faq.html"><a href="manual/faq.html" data-ice="link">FAQ</a></li>
+<li data-ice="manualNav" class="indent-h2" data-link="manual/faq.html"><a href="manual/faq.html#how-netflux-chooses-between--code-rtcdatachannel--code--and--code-websocket--code-" data-ice="link">How Netflux chooses between RTCDataChannel and WebSocket</a></li>
+<li data-ice="manualNav" class="indent-h2" data-link="manual/faq.html"><a href="manual/faq.html#state-description" data-ice="link">State description</a></li>
+<li data-ice="manualNav" class="indent-h3" data-link="manual/faq.html"><a href="manual/faq.html#events" data-ice="link">Events</a></li>
+<li data-ice="manualNav" class="indent-h4" data-link="manual/faq.html"><a href="manual/faq.html#member-left-event" data-ice="link">Member left event</a></li>
+<li data-ice="manualNav" class="indent-h4" data-link="manual/faq.html"><a href="manual/faq.html#signaling-state-event" data-ice="link">Signaling state event</a></li>
+<li data-ice="manualNav" class="indent-h4" data-link="manual/faq.html"><a href="manual/faq.html#topology-state-event" data-ice="link">Topology state event</a></li>
+<li data-ice="manualNav" class="indent-h4" data-link="manual/faq.html"><a href="manual/faq.html#join-method-call" data-ice="link">Join method call</a></li>
+<li data-ice="manualNav" class="indent-h4" data-link="manual/faq.html"><a href="manual/faq.html#leave-method-call" data-ice="link">Leave method call</a></li>
+<li data-ice="manualNav" class="indent-h4" data-link="manual/faq.html"><a href="manual/faq.html#online---event--online-offline-events--navigator-online-" data-ice="link">onLine() event (online/offline events, navigator.onLine)</a></li>
+<li data-ice="manualNav" class="indent-h4" data-link="manual/faq.html"><a href="manual/faq.html#isvisible---event--page-visibility-api-" data-ice="link">isVisible() event (Page Visibility API)</a></li>
+</ul>
+  </div>
 </div>
 </nav>
 
-<div class="content" data-ice="content"><div class="github-markdown" data-ice="content"><h1 id="installation">Installation</h1><h2 id="npm">NPM</h2><pre><code class="lang-shell"><code class="source-code prettyprint">npm install -S netflux</code>
+<div class="content" data-ice="content"><div class="github-markdown" data-ice="content"><h1 id="installation">Installation</h1><h2 id="npm">NPM</h2><pre><code class="lang-shell"><code class="source-code prettyprint">npm install netflux</code>
 </code></pre>
-<p>Netflux has an optional peer dependency: <code>wrtc</code>. This package provides WebRTC API in NodeJS, but for now it is not in use as more tests needed. Checkout <a href="https://github.com/js-platform/node-webrtc">wrtc repository</a> for more info on it.</p>
+<p>3 peer dependencies to be installed for some cases:</p>
+<ul>
+<li><code>rxjs</code> is necessary for both NodeJS and browsers if you want to take advantage of EcmaScript modules, tree-shaking etc. Otherwise for it is already included into <code>dist/netflux.browser.es5.umd.js</code> and <code>dist/netflux.node.es5.cjs.js</code> bundles.</li>
+</ul>
+<pre><code class="lang-shell"><code class="source-code prettyprint">npm install rxjs</code>
+</code></pre>
+<ul>
+<li><code>uws</code> and <code>text-encoding</code> if you target NodeJS (developing a bot):</li>
+</ul>
+<pre><code class="lang-shell"><code class="source-code prettyprint">npm install uws text-encoding</code>
+</code></pre>
+<p>Netflux has an optional dependency: <code>wrtc</code>. This package provides WebRTC API in NodeJS, but for now it is not in use as more tests needed. Checkout <a href="https://github.com/js-platform/node-webrtc">wrtc repository</a> for more info on it.</p>
 <h2 id="what-you-need">What you need</h2><p>Signaling server is the only mandatory server for Netflux, but for a fully functional peer to peer network which suits all use cases you also need STUN and TURN servers.</p>
 <blockquote>
 <p>Netflux comes with Signaling and STUN servers by default for easier quickstart.</p>
@@ -124,7 +151,7 @@ no-stdout-log</code>
 </code></pre>
 <p>If you don&apos;t have any SSL certificate, you may use <a href="https://letsencrypt.org/">Let&apos;s Encrypt</a>.</p>
 <p>Launch server:</p>
-<p><code>``turnserver</code></p>
+<p><code>`</code>turnserver`</p>
 <p>or in daemon:</p>
 <p><code>turnserver -o</code></p>
 <p>Verify that the server is up and running with <a href="https://webrtc.github.io/samples/src/content/peerconnection/trickle-ice/">Trickle ICE</a>.</p>
@@ -132,7 +159,7 @@ no-stdout-log</code>
 </div>
 
 <footer class="footer">
-  Generated by <a href="https://esdoc.org">ESDoc<span data-ice="esdocVersion">(1.0.4)</span><img src="./image/esdoc-logo-mini-black.png"></a>
+  Generated by <a href="https://esdoc.org">ESDoc<span data-ice="esdocVersion">(1.1.0)</span><img src="./image/esdoc-logo-mini-black.png"></a>
 </footer>
 
 <script src="script/search_index.js"></script>

@@ -7,25 +7,27 @@ export default {
   input: 'test/util/botServer.ts',
   output: {
     file: 'test/util/.botServer.js',
-    format: 'cjs'
+    format: 'cjs',
   },
+  context: 'global',
+  external: ['url', 'crypto', 'uws', 'text-encoding'],
   plugins: [
     typescript({
-      include: ['src/**/*.ts', 'test/**/*.ts']
+      include: ['src/**/*.ts', 'test/**/*.ts'],
     }),
     replace({
       patterns: [
         {
           test: /eval.*\(moduleName\);/g,
-          replace: 'undefined;'
-        }
-      ]
+          replace: 'undefined;',
+        },
+      ],
     }),
-    resolve(),
+    resolve({ preferBuiltins: true }),
     commonjs({
       namedExports: {
-        'node_modules/protobufjs/minimal.js': [ 'Reader', 'Writer', 'util', 'roots' ]
-      }
-    })
-  ]
+        'node_modules/protobufjs/minimal.js': ['Reader', 'Writer', 'util', 'roots'],
+      },
+    }),
+  ],
 }

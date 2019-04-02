@@ -1,0 +1,16 @@
+syntax = "proto3";
+package dataChannelBuilder;
+
+message Message {
+  oneof type {
+    string offer = 1;
+    string answer = 2;
+    IceCandidate candidate = 3;
+  }
+}
+
+message IceCandidate {
+  string candidate = 1;
+  string sdpMid = 2;
+  uint32 sdpMLineIndex = 3;
+}

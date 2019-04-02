@@ -1,21 +1,8 @@
-"use strict";
-/**
- * ECMAScript Proposal, specs, and reference implementation for `global`
- * http://tc39.github.io/proposal-global/
- * Code copied from: https://github.com/tc39/proposal-global
- */
-((global) => {
-    if (!global.global) {
-        if (Object.defineProperty) {
-            Object.defineProperty(global, 'global', {
-                configurable: true,
-                enumerable: false,
-                value: global,
-                writable: true,
-            });
-        }
-        else {
-            global.global = global;
-        }
-    }
-})(Function('return this')()); // tslint:disable-line
+import 'webrtc-adapter/out/adapter_no_edge_no_global.js';
+import { env } from './env';
+env.RTCPeerConnection = window.RTCPeerConnection;
+env.RTCIceCandidate = window.RTCIceCandidate;
+env.WebSocket = window.WebSocket;
+env.TextEncoder = window.TextEncoder;
+env.TextDecoder = window.TextDecoder;
+env.crypto = window.crypto;
